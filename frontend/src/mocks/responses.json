@@ -1,0 +1,257 @@
+{
+  "novatech_dis_001": {
+    "risk_score": 82,
+    "revenue_at_risk": 340000,
+    "orders_affected": 14,
+    "sla_risk": 0.78,
+    "stockout_probability": 0.65,
+    "explanation": "With a 12-day delay at Shanghai port and only 8 days of MCU buffer inventory, NovaTech faces a high probability of production line stoppage. Single-source dependency amplifies exposure significantly.",
+    "mitigation_options": [
+      {
+        "option": "Expedite (Air Freight)",
+        "cost": 120000,
+        "service_score": 0.96,
+        "resilience_score": 0.20,
+        "final_score": 0.71,
+        "pros": ["Fastest recovery time (~3 days)", "Maintains all SLAs"],
+        "cons": ["Highest cost at $120K", "No long-term resilience gain"]
+      },
+      {
+        "option": "Alternate Supplier",
+        "cost": 80000,
+        "service_score": 0.93,
+        "resilience_score": 0.65,
+        "final_score": 0.82,
+        "pros": ["Builds supply diversity", "Moderate cost", "Reduces single-source risk permanently"],
+        "cons": ["2-week qualification lead time", "Slight SLA dip on 2 orders"],
+        "recommended": true
+      },
+      {
+        "option": "Buffer Stock",
+        "cost": 60000,
+        "service_score": 0.90,
+        "resilience_score": 0.50,
+        "final_score": 0.74,
+        "pros": ["Lowest cost", "Immediate partial coverage"],
+        "cons": ["Only buys 8 days of runway", "Doesn't address root cause"]
+      }
+    ],
+    "actions": {
+      "supplier_email": {
+        "to": "supply@component-co.com",
+        "subject": "Urgent: Expedited Allocation Request — MCU Lot",
+        "body": "Dear Partner,\n\nDue to the ongoing Shanghai port disruption (12-day delay, Typhoon Vera), we are activating our contingency sourcing protocol.\n\nWe request expedited allocation of 2,000 units of PART_MCU (STM32F4 series) for air freight delivery by March 12, 2026.\n\nPlease confirm availability and pricing within 4 hours. A formal PO will follow immediately.\n\nBest regards,\nNovaTech Procurement Team"
+      },
+      "po_suggestion": {
+        "type": "Air Freight PO",
+        "sku": "PART_MCU",
+        "quantity": 2000,
+        "carrier": "DHL Express",
+        "estimated_cost": 80000,
+        "estimated_arrival": "2026-03-12"
+      },
+      "escalation": {
+        "to": "VP Operations",
+        "priority": "high",
+        "note": "Revenue at risk ($340K) exceeds the $250K escalation threshold. Production line stoppage probable within 8 days without intervention. Recommend immediate approval of alternate supplier qualification budget."
+      }
+    },
+    "reasoning_trace": [
+      { "step": 1, "action": "Parsed disruption signal", "detail": "Port congestion, 12-day delay, East Asia — Shanghai Yangshan", "ts": "08:30:01" },
+      { "step": 2, "action": "Loaded company profile", "detail": "NovaTech: single-source MCU, low buffer (8 days), lead time 75 days", "ts": "08:30:02" },
+      { "step": 3, "action": "Queried inventory levels", "detail": "Current stock: 1,840 units. Daily consumption: 230 units", "ts": "08:30:03" },
+      { "step": 4, "action": "Computed stockout probability", "detail": "P(stockout) = 0.65 within 14-day window given delay distribution", "ts": "08:30:04" },
+      { "step": 5, "action": "Evaluated 3 mitigation options", "detail": "Scored on cost (40%), service level (35%), resilience (25%)", "ts": "08:30:06" },
+      { "step": 6, "action": "Selected optimal strategy", "detail": "Alt Supplier wins with composite score 0.82 vs Expedite 0.71, Buffer 0.74", "ts": "08:30:07" },
+      { "step": 7, "action": "Drafted action artifacts", "detail": "Generated supplier email, PO suggestion, and VP escalation note", "ts": "08:30:08" }
+    ]
+  },
+  "novatech_dis_002": {
+    "risk_score": 58,
+    "revenue_at_risk": 180000,
+    "orders_affected": 7,
+    "sla_risk": 0.45,
+    "stockout_probability": 0.35,
+    "explanation": "New Taiwan export controls add 3–6 weeks to lead times. With medium buffer, NovaTech has time to qualify alternate suppliers or pre-order through bonded warehouses.",
+    "mitigation_options": [
+      {
+        "option": "Pre-Order via Bonded Warehouse",
+        "cost": 45000,
+        "service_score": 0.92,
+        "resilience_score": 0.40,
+        "final_score": 0.75,
+        "pros": ["Avoids licensing delays", "Relatively low cost"],
+        "cons": ["Requires warehouse arrangement", "Short-term fix only"]
+      },
+      {
+        "option": "Alternate Supplier (EU-sourced)",
+        "cost": 65000,
+        "service_score": 0.88,
+        "resilience_score": 0.75,
+        "final_score": 0.80,
+        "pros": ["Geographic diversification", "No geopolitical dependency"],
+        "cons": ["Higher unit cost", "4-week qualification"],
+        "recommended": true
+      },
+      {
+        "option": "Request Fast-Track License",
+        "cost": 15000,
+        "service_score": 0.70,
+        "resilience_score": 0.20,
+        "final_score": 0.55,
+        "pros": ["Cheapest option"],
+        "cons": ["Uncertain approval timeline", "No resilience improvement"]
+      }
+    ],
+    "actions": {
+      "supplier_email": {
+        "to": "sales@eu-components.de",
+        "subject": "RFQ — STM32 Equivalent MCU, EU-Sourced",
+        "body": "Dear Team,\n\nDue to new Taiwan export controls impacting our primary supply chain, we are evaluating EU-sourced alternatives.\n\nPlease provide pricing and availability for 5,000 units of an STM32F4-equivalent MCU for Q2 delivery.\n\nRegards,\nNovaTech Procurement"
+      },
+      "po_suggestion": {
+        "type": "Standard Ocean PO",
+        "sku": "PART_MCU_EU",
+        "quantity": 5000,
+        "carrier": "Hapag-Lloyd",
+        "estimated_cost": 65000,
+        "estimated_arrival": "2026-04-15"
+      },
+      "escalation": null
+    },
+    "reasoning_trace": [
+      { "step": 1, "action": "Parsed disruption signal", "detail": "Taiwan export controls, 3–6 week additional lead time", "ts": "09:15:01" },
+      { "step": 2, "action": "Loaded company profile", "detail": "NovaTech: single-source MCU, low buffer, lead time 75 days", "ts": "09:15:02" },
+      { "step": 3, "action": "Assessed buffer adequacy", "detail": "Current buffer covers 14 days; control delays add 21–42 days", "ts": "09:15:03" },
+      { "step": 4, "action": "Evaluated 3 mitigation options", "detail": "Bonded warehouse, EU supplier, fast-track licensing", "ts": "09:15:05" },
+      { "step": 5, "action": "Selected optimal strategy", "detail": "EU supplier: best resilience score (0.75) at moderate cost", "ts": "09:15:06" }
+    ]
+  },
+  "freshchain_dis_005": {
+    "risk_score": 71,
+    "revenue_at_risk": 520000,
+    "orders_affected": 23,
+    "sla_risk": 0.62,
+    "stockout_probability": 0.55,
+    "explanation": "A 35% yield reduction in Salinas Valley directly affects FreshChain's core product lines. Dual-source provides some buffer, but secondary suppliers cannot cover full volume for more than 10 days.",
+    "mitigation_options": [
+      {
+        "option": "Spot Market Procurement",
+        "cost": 95000,
+        "service_score": 0.85,
+        "resilience_score": 0.30,
+        "final_score": 0.68,
+        "pros": ["Fast availability", "No qualification required"],
+        "cons": ["Premium pricing", "Quality variability risk"]
+      },
+      {
+        "option": "Activate Arizona Secondary Farm",
+        "cost": 40000,
+        "service_score": 0.88,
+        "resilience_score": 0.70,
+        "final_score": 0.82,
+        "pros": ["Pre-qualified supplier", "Geographic hedge against CA drought"],
+        "cons": ["Slightly higher logistics cost", "Limited volume ceiling"],
+        "recommended": true
+      },
+      {
+        "option": "SKU Rationalization",
+        "cost": 20000,
+        "service_score": 0.72,
+        "resilience_score": 0.45,
+        "final_score": 0.65,
+        "pros": ["Lowest cost", "Preserves core SKUs"],
+        "cons": ["Customer notification required", "Revenue loss on discontinued SKUs"]
+      }
+    ],
+    "actions": {
+      "supplier_email": {
+        "to": "ops@arizonafresh.com",
+        "subject": "Urgent Volume Request — Leafy Greens, March Delivery",
+        "body": "Dear ArizonaFresh Team,\n\nDue to the ongoing drought conditions impacting our primary Salinas Valley supply, we are activating our contingency agreement.\n\nWe require 180,000 lbs of mixed greens and 90,000 lbs of spinach for the week of March 10–14 delivery window.\n\nPlease confirm capacity and pricing within 6 hours.\n\nFreshChain Procurement"
+      },
+      "po_suggestion": {
+        "type": "Emergency Produce PO",
+        "sku": "PRODUCE_MIXED_GREENS",
+        "quantity": 270000,
+        "carrier": "FreshChain Refrigerated Fleet",
+        "estimated_cost": 40000,
+        "estimated_arrival": "2026-03-10"
+      },
+      "escalation": {
+        "to": "Chief Supply Officer",
+        "priority": "high",
+        "note": "Drought impact exceeds single-event threshold. Recommend activating full Arizona contingency contract and reviewing Q2 sourcing diversification plan."
+      }
+    },
+    "reasoning_trace": [
+      { "step": 1, "action": "Parsed disruption signal", "detail": "35% yield reduction, Salinas Valley, drought-related", "ts": "06:30:01" },
+      { "step": 2, "action": "Loaded company profile", "detail": "FreshChain: dual-source, medium buffer (~10 days), short lead time 14 days", "ts": "06:30:02" },
+      { "step": 3, "action": "Checked secondary supplier capacity", "detail": "ArizonaFresh can cover 65% of gap volume within SLA", "ts": "06:30:03" },
+      { "step": 4, "action": "Evaluated 3 mitigation options", "detail": "Spot market, Arizona farm, SKU rationalization", "ts": "06:30:05" },
+      { "step": 5, "action": "Selected optimal strategy", "detail": "Arizona farm: highest composite score (0.82), pre-qualified", "ts": "06:30:06" },
+      { "step": 6, "action": "Drafted action artifacts", "detail": "Emergency PO and CSO escalation generated", "ts": "06:30:07" }
+    ]
+  },
+  "steelwright_dis_008": {
+    "risk_score": 44,
+    "revenue_at_risk": 120000,
+    "orders_affected": 5,
+    "sla_risk": 0.30,
+    "stockout_probability": 0.22,
+    "explanation": "Ukraine export ban affects spot pricing but SteelWright's multi-source strategy and high buffer provide substantial cushion. Risk is manageable with cost hedging.",
+    "mitigation_options": [
+      {
+        "option": "Draw Down Buffer Stock",
+        "cost": 5000,
+        "service_score": 0.95,
+        "resilience_score": 0.35,
+        "final_score": 0.76,
+        "pros": ["Zero procurement lead time", "Lowest immediate cost"],
+        "cons": ["Reduces buffer below target", "Leaves no cushion for follow-on events"]
+      },
+      {
+        "option": "Accelerate Domestic Supplier Order",
+        "cost": 28000,
+        "service_score": 0.92,
+        "resilience_score": 0.80,
+        "final_score": 0.88,
+        "pros": ["Replenishes buffer", "Reduces EU dependency", "Short lead time (10 days)"],
+        "cons": ["Moderate premium over standard pricing"],
+        "recommended": true
+      },
+      {
+        "option": "Hedge with Futures Contract",
+        "cost": 12000,
+        "service_score": 0.80,
+        "resilience_score": 0.60,
+        "final_score": 0.72,
+        "pros": ["Price certainty for 90 days"],
+        "cons": ["Does not address physical availability", "Requires treasury approval"]
+      }
+    ],
+    "actions": {
+      "supplier_email": {
+        "to": "sales@nucor.com",
+        "subject": "Accelerated PO Request — Specialty Alloy Sheet",
+        "body": "Dear Nucor Team,\n\nGiven current European supply disruptions, we'd like to accelerate our Q2 alloy order to Q1 delivery.\n\nPlease confirm availability of 500 MT of Grade 4140 alloy steel sheet for delivery by March 20.\n\nSteelWright Procurement"
+      },
+      "po_suggestion": {
+        "type": "Accelerated Domestic PO",
+        "sku": "STEEL_4140_ALLOY",
+        "quantity": 500,
+        "carrier": "Rail — CSX",
+        "estimated_cost": 28000,
+        "estimated_arrival": "2026-03-20"
+      },
+      "escalation": null
+    },
+    "reasoning_trace": [
+      { "step": 1, "action": "Parsed disruption signal", "detail": "Ukraine export ban, 90-day duration, specialty alloy pricing impact", "ts": "10:05:01" },
+      { "step": 2, "action": "Loaded company profile", "detail": "SteelWright: multi-source, high buffer (45 days), lead time 45 days", "ts": "10:05:02" },
+      { "step": 3, "action": "Assessed buffer adequacy", "detail": "High buffer covers full disruption window; risk is medium-term pricing", "ts": "10:05:03" },
+      { "step": 4, "action": "Evaluated 3 mitigation options", "detail": "Buffer drawdown, domestic acceleration, futures hedge", "ts": "10:05:05" },
+      { "step": 5, "action": "Selected optimal strategy", "detail": "Domestic acceleration: best resilience gain at reasonable cost", "ts": "10:05:06" }
+    ]
+  }
+}

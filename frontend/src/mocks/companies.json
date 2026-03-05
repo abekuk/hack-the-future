@@ -1,0 +1,44 @@
+[
+  {
+    "id": "novatech",
+    "name": "NovaTech Electronics",
+    "industry": "Industrial Electronics / IoT",
+    "critical_component": "Microcontroller (MCU)",
+    "margin_pct": 0.35,
+    "lead_time_days": 75,
+    "inventory_buffer": "low",
+    "sourcing": "single-source",
+    "revenue_annual": 42000000,
+    "employees": 320,
+    "headquarters": "Austin, TX",
+    "description": "Designs and manufactures industrial IoT controllers for smart factory automation."
+  },
+  {
+    "id": "freshchain",
+    "name": "FreshChain Foods",
+    "industry": "Packaged Fresh Foods / Produce",
+    "critical_component": "Cold-chain Packaging",
+    "margin_pct": 0.18,
+    "lead_time_days": 14,
+    "inventory_buffer": "medium",
+    "sourcing": "dual-source",
+    "revenue_annual": 78000000,
+    "employees": 610,
+    "headquarters": "Fresno, CA",
+    "description": "Produces and distributes packaged fresh salads and produce to national grocery chains."
+  },
+  {
+    "id": "steelwright",
+    "name": "SteelWright Industries",
+    "industry": "Precision Metal Fabrication",
+    "critical_component": "Specialty Steel Alloy",
+    "margin_pct": 0.22,
+    "lead_time_days": 45,
+    "inventory_buffer": "high",
+    "sourcing": "multi-source",
+    "revenue_annual": 31000000,
+    "employees": 180,
+    "headquarters": "Cleveland, OH",
+    "description": "Manufactures precision-machined steel components for automotive and aerospace OEMs."
+  }
+]
