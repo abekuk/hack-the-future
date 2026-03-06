@@ -4,13 +4,11 @@ import { ThumbsUp, ThumbsDown, Check } from 'lucide-react';
 
 export default function FeedbackPanel({ onSubmit }) {
   const [helpful, setHelpful] = useState(null);
-  const [actionTaken, setActionTaken] = useState('');
-  const [outcome, setOutcome] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = () => {
     if (helpful === null) return;
-    onSubmit({ helpful, action_taken: actionTaken, outcome });
+    onSubmit({ helpful });
     setSubmitted(true);
   };
 
@@ -71,49 +69,6 @@ export default function FeedbackPanel({ onSubmit }) {
             <Icon size={14} /> {label}
           </button>
         ))}
-      </div>
-
-      <div className="flex flex-col gap-3 mb-5">
-        <div>
-          <label className="text-xs mb-1.5 block" style={{ color: 'var(--text-secondary)' }}>
-            What actually happened?
-          </label>
-          <select
-            value={actionTaken}
-            onChange={(e) => setActionTaken(e.target.value)}
-            className="w-full rounded-xl px-3 py-2 text-sm outline-none"
-            style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid var(--border-subtle)',
-              color: actionTaken ? 'var(--text-primary)' : 'var(--text-secondary)',
-            }}
-          >
-            <option value="" style={{ background: '#1A1A2E' }}>Select action taken…</option>
-            <option value="implemented_as_is" style={{ background: '#1A1A2E' }}>Implemented as-is</option>
-            <option value="modified" style={{ background: '#1A1A2E' }}>Modified recommendation</option>
-            <option value="rejected" style={{ background: '#1A1A2E' }}>Rejected</option>
-          </select>
-        </div>
-        <div>
-          <label className="text-xs mb-1.5 block" style={{ color: 'var(--text-secondary)' }}>
-            Outcome
-          </label>
-          <select
-            value={outcome}
-            onChange={(e) => setOutcome(e.target.value)}
-            className="w-full rounded-xl px-3 py-2 text-sm outline-none"
-            style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid var(--border-subtle)',
-              color: outcome ? 'var(--text-primary)' : 'var(--text-secondary)',
-            }}
-          >
-            <option value="" style={{ background: '#1A1A2E' }}>Select outcome…</option>
-            <option value="resolved" style={{ background: '#1A1A2E' }}>Disruption resolved</option>
-            <option value="partially_mitigated" style={{ background: '#1A1A2E' }}>Partially mitigated</option>
-            <option value="escalated" style={{ background: '#1A1A2E' }}>Escalated further</option>
-          </select>
-        </div>
       </div>
 
       <button

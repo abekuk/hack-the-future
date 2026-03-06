@@ -10,6 +10,7 @@
       {
         "option": "Expedite (Air Freight)",
         "cost": 120000,
+        "cost_avoidance": 220000,
         "service_score": 0.96,
         "resilience_score": 0.20,
         "final_score": 0.71,
@@ -19,6 +20,7 @@
       {
         "option": "Alternate Supplier",
         "cost": 80000,
+        "cost_avoidance": 260000,
         "service_score": 0.93,
         "resilience_score": 0.65,
         "final_score": 0.82,
@@ -29,6 +31,7 @@
       {
         "option": "Buffer Stock",
         "cost": 60000,
+        "cost_avoidance": 280000,
         "service_score": 0.90,
         "resilience_score": 0.50,
         "final_score": 0.74,
@@ -77,6 +80,7 @@
       {
         "option": "Pre-Order via Bonded Warehouse",
         "cost": 45000,
+        "cost_avoidance": 135000,
         "service_score": 0.92,
         "resilience_score": 0.40,
         "final_score": 0.75,
@@ -86,6 +90,7 @@
       {
         "option": "Alternate Supplier (EU-sourced)",
         "cost": 65000,
+        "cost_avoidance": 115000,
         "service_score": 0.88,
         "resilience_score": 0.75,
         "final_score": 0.80,
@@ -96,6 +101,7 @@
       {
         "option": "Request Fast-Track License",
         "cost": 15000,
+        "cost_avoidance": 165000,
         "service_score": 0.70,
         "resilience_score": 0.20,
         "final_score": 0.55,
@@ -138,6 +144,7 @@
       {
         "option": "Spot Market Procurement",
         "cost": 95000,
+        "cost_avoidance": 425000,
         "service_score": 0.85,
         "resilience_score": 0.30,
         "final_score": 0.68,
@@ -147,6 +154,7 @@
       {
         "option": "Activate Arizona Secondary Farm",
         "cost": 40000,
+        "cost_avoidance": 480000,
         "service_score": 0.88,
         "resilience_score": 0.70,
         "final_score": 0.82,
@@ -157,6 +165,7 @@
       {
         "option": "SKU Rationalization",
         "cost": 20000,
+        "cost_avoidance": 500000,
         "service_score": 0.72,
         "resilience_score": 0.45,
         "final_score": 0.65,
@@ -204,6 +213,7 @@
       {
         "option": "Draw Down Buffer Stock",
         "cost": 5000,
+        "cost_avoidance": 115000,
         "service_score": 0.95,
         "resilience_score": 0.35,
         "final_score": 0.76,
@@ -213,6 +223,7 @@
       {
         "option": "Accelerate Domestic Supplier Order",
         "cost": 28000,
+        "cost_avoidance": 92000,
         "service_score": 0.92,
         "resilience_score": 0.80,
         "final_score": 0.88,
@@ -223,6 +234,7 @@
       {
         "option": "Hedge with Futures Contract",
         "cost": 12000,
+        "cost_avoidance": 108000,
         "service_score": 0.80,
         "resilience_score": 0.60,
         "final_score": 0.72,

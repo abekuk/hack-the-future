@@ -82,9 +82,14 @@ export default function TradeoffTable({ options }) {
                     </span>
                   )}
                 </div>
-                <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
-                  {formatCost(opt.cost)}
-                </span>
+                <div className="flex flex-col items-end">
+                  <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
+                    Cost: {formatCost(opt.cost)}
+                  </span>
+                  <span className="text-xs font-semibold" style={{ color: 'var(--accent-green)' }}>
+                    Saves {opt.cost_avoidance != null ? formatCost(opt.cost_avoidance) : 'N/A'}
+                  </span>
+                </div>
               </div>
 
               <div className="flex flex-col gap-1.5">

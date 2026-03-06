@@ -114,7 +114,7 @@ function formatCurrency(value) {
 }
 
 export default function RiskAssessment({ response }) {
-  const { risk_score, revenue_at_risk, orders_affected, sla_risk, stockout_probability } = response;
+  const { risk_score, revenue_at_risk, sla_risk, stockout_probability } = response;
   const color = getRiskColor(risk_score);
   const chartData = [{ value: risk_score, fill: color }];
 
@@ -163,11 +163,6 @@ export default function RiskAssessment({ response }) {
           label="Revenue at Risk"
           value={formatCurrency(revenue_at_risk)}
           delay={0.1}
-        />
-        <StatCard
-          label="Orders Affected"
-          value={orders_affected}
-          delay={0.2}
         />
         <StatCard
           label="SLA Risk"
