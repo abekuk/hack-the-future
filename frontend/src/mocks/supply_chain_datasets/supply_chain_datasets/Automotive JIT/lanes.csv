@@ -1,0 +1,6 @@
+lane_id,mode,base_transit_days,current_transit_days,temperature_control_required
+MX->US_truck,truck,3,3,False
+US_domestic_truck,truck,2,2,False
+CN->US_ocean,ocean,16,16,False
+CN->US_air,air,3,3,False
+CA->US_truck,truck,1,1,False

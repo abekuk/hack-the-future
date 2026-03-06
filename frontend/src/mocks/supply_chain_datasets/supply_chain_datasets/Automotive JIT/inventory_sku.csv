@@ -1,0 +1,5 @@
+sku_id,on_hand_units,safety_stock_units
+SKU_MOD_A,1800,1400
+SKU_MOD_D,1100,1000
+SKU_MOD_E,2200,1700
+SKU_MOD_F,2000,1600

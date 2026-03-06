@@ -1,0 +1,5 @@
+sku_id,forecast_daily_units,demand_volatility_cv
+SKU_SALAD_A,1800,0.22
+SKU_SALAD_B,1200,0.25
+SKU_BOWL_A,950,0.28
+SKU_SMOOTH_A,1600,0.18

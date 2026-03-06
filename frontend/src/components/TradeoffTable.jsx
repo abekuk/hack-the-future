@@ -20,6 +20,12 @@ function ScoreBar({ value, color }) {
   );
 }
 
+function formatCost(value) {
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`;
+  return `$${value}`;
+}
+
 export default function TradeoffTable({ options }) {
   const [expandedIdx, setExpandedIdx] = useState(null);
 
@@ -77,7 +83,7 @@ export default function TradeoffTable({ options }) {
                   )}
                 </div>
                 <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
-                  ${(opt.cost / 1000).toFixed(0)}K
+                  {formatCost(opt.cost)}
                 </span>
               </div>
 

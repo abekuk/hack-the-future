@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import CompanySelector from './CompanySelector';
 import CompanyProfile from './CompanyProfile';
@@ -16,7 +16,8 @@ export default function Dashboard() {
   const [selectedDisruption, setSelectedDisruption] = useState(null);
   const [showTrace, setShowTrace] = useState(true);
 
-  const { stage, response, streamedSteps, analyze, sendFeedback, reset } = useAgent();
+  const { stage, response, streamedSteps, analyze, sendFeedback, reset, restore } = useAgent();
+  const companyCache = useRef({});
 
   useEffect(() => {
     getCompanies().then(data => {
@@ -27,15 +28,28 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!selectedCompany) return;
-    setSelectedDisruption(null);
-    reset();
     getDisruptions(selectedCompany.id).then(setDisruptions);
+
+    const cached = companyCache.current[selectedCompany.id];
+    if (cached) {
+      setSelectedDisruption(cached.disruption);
+      restore(cached.response);
+    } else {
+      setSelectedDisruption(null);
+      reset();
+    }
   }, [selectedCompany]);
 
   const handleDisruptionSelect = (disruption) => {
     setSelectedDisruption(disruption);
     analyze(selectedCompany.id, disruption);
   };
+
+  useEffect(() => {
+    if (stage === 'done' && response && selectedCompany && selectedDisruption) {
+      companyCache.current[selectedCompany.id] = { disruption: selectedDisruption, response };
+    }
+  }, [stage, response]);
 
   const handleFeedback = async (payload) => {
     await sendFeedback({
@@ -116,6 +130,8 @@ export default function Dashboard() {
               disruptions={disruptions}
               selected={selectedDisruption}
               onSelect={handleDisruptionSelect}
+              analysisResponse={response}
+              analysisStage={stage}
             />
           </div>
         </aside>

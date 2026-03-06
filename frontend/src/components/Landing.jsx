@@ -69,7 +69,7 @@ export default function Landing({ onLaunch }) {
           animate={{ opacity: 0.6 }}
           transition={{ delay: 0.7, duration: 0.7 }}
         >
-          Powered by Google ADK + Gemini · Hack the Future 2026
+          Powered by Gemini · Hack the Future 2026
         </motion.p>
 
         {/* CTA */}

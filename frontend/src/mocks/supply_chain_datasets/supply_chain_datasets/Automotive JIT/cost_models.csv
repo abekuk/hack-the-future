@@ -1,0 +1,4 @@
+key,value
+expedite_air_cost_per_unit_cad,1.25
+alt_supplier_price_premium_pct,0.12
+air_capacity_limit_units,2500.0

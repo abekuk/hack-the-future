@@ -1,0 +1,10 @@
+part_id,description,is_line_stop,normal_lead_time_days,substitutes,qualified_suppliers,category
+ING_LEAF,Leafy greens (kg),True,2,,SUP_CA_FARM;SUP_US_FARM;SUP_MX_FARM,food_inputs
+ING_TOM,Tomatoes (kg),True,3,,SUP_US_FARM;SUP_MX_FARM,food_inputs
+ING_BERR,Berries (kg),True,2,,SUP_US_FARM;SUP_CA_FARM,food_inputs
+ING_DAIRY,Dairy base (L),True,7,,SUP_US_DAIRY,food_inputs
+ING_PROT,Plant protein (kg),True,21,ING_PROT_ALT,SUP_US_FARM;SUP_CA_FARM,food_inputs
+PKG_TRAY,Tray pack,False,10,,SUP_CA_PACK,packaging
+PKG_FILM,Sealing film,False,12,,SUP_CA_PACK,packaging
+PKG_LABEL,Food label,False,7,,SUP_CA_PACK,packaging
+PKG_BOX,Shipping carton,False,8,,SUP_CA_PACK,packaging

@@ -54,7 +54,12 @@ function POCard({ action }) {
     { label: 'SKU', value: action.sku },
     { label: 'Quantity', value: action.quantity.toLocaleString() },
     { label: 'Carrier', value: action.carrier },
-    { label: 'Est. Cost', value: `$${(action.estimated_cost / 1000).toFixed(0)}K` },
+    { label: 'Est. Cost', value: (() => {
+        const v = action.estimated_cost;
+        if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`;
+        if (v >= 1_000) return `$${(v / 1_000).toFixed(0)}K`;
+        return `$${v}`;
+      })() },
     { label: 'Est. Arrival', value: action.estimated_arrival },
   ];
   return (

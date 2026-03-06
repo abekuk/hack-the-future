@@ -29,6 +29,15 @@ function StatCard({ label, value, format = 'text', delay = 0 }) {
   );
 }
 
+function formatCurrency(value) {
+  const num = typeof value === 'string' ? parseFloat(value.replace(/[^0-9.]/g, '')) : value;
+  if (isNaN(num)) return '$0';
+  if (num >= 1_000_000_000) return `$${(num / 1_000_000_000).toFixed(1)}B`;
+  if (num >= 1_000_000) return `$${(num / 1_000_000).toFixed(1)}M`;
+  if (num >= 1_000) return `$${(num / 1_000).toFixed(0)}K`;
+  return `$${num.toFixed(0)}`;
+}
+
 export default function RiskAssessment({ response }) {
   const { risk_score, revenue_at_risk, orders_affected, sla_risk, stockout_probability } = response;
   const color = getRiskColor(risk_score);
@@ -82,7 +91,7 @@ export default function RiskAssessment({ response }) {
       <div className="grid grid-cols-2 gap-3">
         <StatCard
           label="Revenue at Risk"
-          value={`$${(revenue_at_risk / 1000).toFixed(0)}K`}
+          value={formatCurrency(revenue_at_risk)}
           delay={0.1}
         />
         <StatCard

@@ -1,0 +1,5 @@
+sku_id,description,customer_tier,criticality,substitutability,price_cad,gross_margin_pct
+SKU_MOD_A,Actuator Module A,T1,high,low,85.0,0.18
+SKU_MOD_D,Control Module D,T1,high,low,120.0,0.2
+SKU_MOD_E,Bracket Kit E,T2,medium,medium,36.0,0.16
+SKU_MOD_F,Harness Kit F,T3,medium,medium,44.0,0.15

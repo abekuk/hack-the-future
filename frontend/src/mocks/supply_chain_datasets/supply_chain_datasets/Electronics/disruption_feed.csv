@@ -1,0 +1,11 @@
+company_key,scenario_id,event_date,event_type,lane_id,delta_transit_days,confidence,severity,headline,source_type
+VOLTEDGE,SCN_LANEDELAY_10D,2026-03-01,lane_delay,CN->CA_ocean,10,0.45,0.3,simulated update,simulated_feed
+VOLTEDGE,SCN_LANEDELAY_10D,2026-03-02,lane_delay,CN->CA_ocean,10,0.45,0.3,simulated update,simulated_feed
+VOLTEDGE,SCN_LANEDELAY_10D,2026-03-03,lane_delay,CN->CA_ocean,10,0.45,0.3,simulated update,simulated_feed
+VOLTEDGE,SCN_LANEDELAY_10D,2026-03-04,lane_delay,CN->CA_ocean,10,0.7,0.55,simulated update,simulated_feed
+VOLTEDGE,SCN_LANEDELAY_10D,2026-03-05,lane_delay,CN->CA_ocean,10,0.7,0.55,simulated update,simulated_feed
+VOLTEDGE,SCN_LANEDELAY_10D,2026-03-06,lane_delay,CN->CA_ocean,10,0.7,0.55,simulated update,simulated_feed
+VOLTEDGE,SCN_LANEDELAY_10D,2026-03-07,lane_delay,CN->CA_ocean,10,0.9,0.8,simulated update,simulated_feed
+VOLTEDGE,SCN_LANEDELAY_10D,2026-03-08,lane_delay,CN->CA_ocean,10,0.9,0.8,simulated update,simulated_feed
+VOLTEDGE,SCN_LANEDELAY_10D,2026-03-09,lane_delay,CN->CA_ocean,10,0.9,0.8,simulated update,simulated_feed
+VOLTEDGE,SCN_LANEDELAY_10D,2026-03-10,lane_delay,CN->CA_ocean,10,0.9,0.8,simulated update,simulated_feed

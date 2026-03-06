@@ -42,5 +42,11 @@ export function useAgent() {
     resetStream();
   }, [resetStream]);
 
-  return { stage, response, streamedSteps, error, analyze, sendFeedback, reset };
+  const restore = useCallback((cachedResponse) => {
+    setResponse(cachedResponse);
+    setStage('done');
+    setError(null);
+  }, []);
+
+  return { stage, response, streamedSteps, error, analyze, sendFeedback, reset, restore };
 }

@@ -1,0 +1,13 @@
+part_id,description,is_line_stop,normal_lead_time_days,substitutes,qualified_suppliers,category
+PART_MCU,Microcontroller (MCU),True,90,,SUP_CN_CHIP,electronics
+PART_PWRIC,Power IC,True,70,,SUP_CN_CHIP,electronics
+PART_MEM,Flash Memory,True,60,,SUP_CN_CHIP,electronics
+PART_SENS,Sensor module,True,55,,SUP_CN_CHIP,electronics
+PART_PCB,4-layer PCB,False,25,PART_PCB_ALT,SUP_MY_PCB,electronics
+PART_ENC,Aluminum enclosure,False,15,PART_ENC_ALT,SUP_US_ENC,electronics
+PART_PASS,Passives kit,False,35,PART_PASS_ALT,SUP_VN_PASS,electronics
+PART_CONN,Connector set,False,30,PART_CONN_ALT,SUP_VN_PASS,electronics
+PART_LED,Status LED array,False,20,PART_LED_ALT,SUP_VN_PASS,electronics
+PART_PACK,Packaging set,False,5,,SUP_CA_PACK,packaging
+PART_LABEL,Label kit,False,7,,SUP_CA_PACK,packaging
+PART_FW,Firmware license,False,1,,SUP_CA_PACK,services

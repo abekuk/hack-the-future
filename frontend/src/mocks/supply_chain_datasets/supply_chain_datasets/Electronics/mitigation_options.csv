@@ -1,0 +1,4 @@
+option_id,type,description,requires_human_approval_if_cost_over_cad
+expedite_air,logistics,Switch critical inbound parts to air freight (limited capacity),15000
+reallocate_inventory,allocation,Allocate scarce inventory to Tier 1 or highest-margin orders first,0
+activate_alt_supplier,sourcing,Switch eligible parts to qualified alternate supplier,0
