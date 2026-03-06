@@ -29,6 +29,81 @@ function StatCard({ label, value, format = 'text', delay = 0 }) {
   );
 }
 
+function renderInlineBold(text) {
+  const parts = text.split(/\*\*(.*?)\*\*/g);
+  return parts.map((part, i) =>
+    i % 2 === 1
+      ? <strong key={i} style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{part}</strong>
+      : part
+  );
+}
+
+function normalizeExplanation(text) {
+  return text
+    .replace(/^#{1,3}\s+[^\n]*/m, '')              // strip ### title line
+    .replace(/(?<!\n)(\*\*[^*\n]+:\*\*)/g, '\n$1') // break before **Section:** headers
+    .replace(/(?<!\*)\*(?!\*)\s+/g, '\n* ')         // break before * bullets — lookbehind prevents matching ** closing pairs
+    .trim();
+}
+
+function ExplanationBlock({ text }) {
+  const normalized = normalizeExplanation(text);
+  const lines = normalized.split('\n').map(l => l.trim()).filter(Boolean);
+
+  const elements = [];
+  let bulletBuffer = [];
+
+  const flushBullets = (key) => {
+    if (bulletBuffer.length === 0) return;
+    elements.push(
+      <ul key={key} className="flex flex-col gap-2">
+        {bulletBuffer.map((item, i) => (
+          <li key={i} className="flex items-start gap-2.5 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            <span className="mt-2 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: 'var(--accent-blue)' }} />
+            <span>{renderInlineBold(item)}</span>
+          </li>
+        ))}
+      </ul>
+    );
+    bulletBuffer = [];
+  };
+
+  lines.forEach((line, i) => {
+    // Skip lone stars (artefacts from malformed input)
+    if (/^\*+$/.test(line)) return;
+
+    // Bullet point
+    const bulletMatch = line.match(/^\*\s+(.*)/);
+    if (bulletMatch) {
+      bulletBuffer.push(bulletMatch[1]);
+      return;
+    }
+
+    flushBullets(`ul-${i}`);
+
+    // Section heading: line is **something** or **something:**
+    const headingMatch = line.match(/^\*\*([^*]+)\*\*:?$/);
+    if (headingMatch) {
+      elements.push(
+        <p key={i} className="text-sm font-bold pt-3 pb-0.5" style={{ color: 'var(--text-primary)' }}>
+          {headingMatch[1].replace(/:$/, '')}
+        </p>
+      );
+      return;
+    }
+
+    // Plain paragraph
+    elements.push(
+      <p key={i} className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+        {renderInlineBold(line)}
+      </p>
+    );
+  });
+
+  flushBullets('ul-final');
+  return <div className="flex flex-col gap-2">{elements}</div>;
+}
+
 function formatCurrency(value) {
   const num = typeof value === 'string' ? parseFloat(value.replace(/[^0-9.]/g, '')) : value;
   if (isNaN(num)) return '$0';
@@ -81,11 +156,6 @@ export default function RiskAssessment({ response }) {
           </div>
         </div>
 
-        {response.explanation && (
-          <p className="text-sm text-center mt-3 max-w-sm" style={{ color: 'var(--text-secondary)' }}>
-            {response.explanation}
-          </p>
-        )}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
@@ -110,6 +180,21 @@ export default function RiskAssessment({ response }) {
           delay={0.4}
         />
       </div>
+
+      {response.explanation && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.4 }}
+          className="mt-2 rounded-2xl p-4"
+          style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}
+        >
+          <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-secondary)' }}>
+            Analysis Summary
+          </p>
+          <ExplanationBlock text={response.explanation} />
+        </motion.div>
+      )}
     </motion.div>
   );
 }

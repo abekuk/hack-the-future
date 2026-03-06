@@ -73,9 +73,6 @@ export default function ReasoningTrace({ steps, isThinking }) {
                       <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
                         {step.action}
                       </p>
-                      <span className="text-xs flex-shrink-0" style={{ color: 'var(--text-secondary)', opacity: 0.6 }}>
-                        {step.ts}
-                      </span>
                     </div>
                     <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                       {step.detail}
