@@ -1,0 +1,428 @@
+{
+  "name": "HTF-weightlessagent-final",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=={{ $json.message }}",
+        "options": {
+          "systemMessage": "You are the Master Agent, the orchestrator of the Supply Chain Resilience System. \n\nYou receive two types of tasks based on the user's input:\nA) \"Fetch Live News\": If the user provides a company context and asks for live news, you MUST immediately call the PERCEPTION AGENT to gather targeted news and return ONLY that news. Do NOT call the Risk Intelligence Agent.\nB) \"Analyze Disruption\": If the user provides a specific disruption event, you MUST call the PERCEPTION AGENT first, and then the RISK INTELLIGENCE AGENT to perform deep impact simulations.\n\nPERCEPTION AGENT INSTRUCTIONS:\nAlways pass the Perception Agent the company's full list of Critical Parts, Suppliers, and Geographic Locations. Instruct it to gather ONLY news signals relevant to these specific nodes.\n\nRESPONSIBLE AI RULES:\n- TRANSPARENT REASONING: Populate the `reasoning_trace`.\n- HUMAN-IN-THE-LOOP: DRAFT actions for review.\n- BIAS MITIGATION: Base recommendations on metrics.\n- COST SAVINGS: Calculate `cost_avoidance` as: revenue_at_risk - cost.\n\nIf responding to Task A (Fetch Live News), return ONLY the Perception Agent's JSON output array.\nIf responding to Task B (Analyze Risk), use the standard OUTPUT FORMAT (Strict RAW JSON):\n\n\nOUTPUT FORMAT (Strict RAW JSON):\n{\n  \"risk_score\": number, \n  \"revenue_at_risk\": number,\n  \"orders_affected\": number,\n  \"sla_risk\": number,\n  \"explanation\": \"Markdown string summarizing the disruption and logic\",\n  \"mitigation_options\": [\n    {\n      \"option\": \"string\",\n      \"cost\": number,\n      \"service_score\": number,\n      \"resilience_score\": number,\n      \"final_score\": number,\n      \"pros\": [\"string\"],\n      \"cons\": [\"string\"],\n      \"recommended\": boolean\n    }\n  ],\n  \"actions\": {\n    \"supplier_email\": { \"to\": \"string\", \"subject\": \"string\", \"body\": \"string\" },\n    \"po_suggestion\": { \"type\": \"string\", \"sku\": \"string\", \"quantity\": number, \"estimated_cost\": number },\n    \"escalation\": { \"to\": \"string\", \"priority\": \"high\", \"note\": \"string\" }\n  },\n  \"reasoning_trace\": [\n    { \"step\": number, \"action\": \"string\", \"detail\": \"string\", \"ts\": \"HH:MM:SS\" }\n  ],\n  \"bias_mitigation_statement\": \"Briefly state why the recommendation is objective.\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -528,
+        208
+      ],
+      "id": "663bd048-b454-4f43-b905-f05f27de055f",
+      "name": "Master Agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Fetches real-time news articles from NewsAPI. Use this tool to search for supply chain disruption news. Pass the news query as the 'q' parameter.\n",
+        "url": "https://newsapi.org/v2/everything",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "language",
+              "value": "en"
+            },
+            {
+              "name": "sortBy",
+              "value": "relevancy"
+            },
+            {
+              "name": "q",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters2_Value', ``, 'string') }}"
+            },
+            {
+              "name": "pageSize",
+              "value": "50"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "f22173b4872e4c909efca676109032e6"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        -928,
+        608
+      ],
+      "id": "1206c99b-2f3c-4e3c-8741-15020a2591b4",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "toolDescription": "You are the Perception Agent. Your job is to act as an intelligence filter for a specific company's supply chain.\n\nYou will receive Context from the Master Agent containing the company's:\n1. Critical Suppliers\n2. Parts\n3. Geographic Regions\n\nTASK:\n1. Generate specific, targeted search queries based ONLY on the provided critical components and regions.\n2. Call the HTTP Request tool (NewsAPI) using these search queries to find real-time risks. Do NOT fabricate articles.\n3. Critically filter the NewsAPI results. Only include articles that pose a direct logistical or geopolitical threat to the provided supplier footprint (region of operation, parts etc.).\n4. Extract the top 3-5 verified, relevant disruption events.\n\nReturn them strictly as a JSON object:\n{\n  \"top_articles\": [\n    { \"title\": \"...\", \"source\": \"...\", \"url\": \"...\", \"publishedAt\": \"...\", \"description\": \"...\" }\n  ],\n  \"risk_summary\": \"2-3 sentences explaining exactly how these news items threaten the provided critical components.\"\n}\n",
+        "text": "=={{ $json.message }}",
+        "options": {
+          "maxIterations": 10
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        -928,
+        432
+      ],
+      "id": "89b26a1f-6bed-48d8-9c65-afb8992ef762",
+      "name": "Perception Agent"
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "value": "htf-weightless-agents",
+          "mode": "list",
+          "cachedResultName": "HTF-weightless-agents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        48
+      ],
+      "id": "e7656bd9-9b6f-484f-9be1-43383bff2076",
+      "name": "Google Vertex Chat Model",
+      "credentials": {
+        "googleApi": {
+          "id": "5Rljj2OlP6oKrgk1",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "value": "htf-weightless-agents",
+          "mode": "list",
+          "cachedResultName": "HTF-weightless-agents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        -1152,
+        608
+      ],
+      "id": "6ea0cc36-0a0b-4703-a57e-0dfa992fce7f",
+      "name": "Google Vertex Chat Model1",
+      "credentials": {
+        "googleApi": {
+          "id": "5Rljj2OlP6oKrgk1",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Risk Intelligence Agent",
+        "text": "You are the Risk Intelligence Agent. You receive supplier profiles and news signals to model operational and financial failure points.\nYou will receive a JSON payload containing:\n- supplier_profile: the manufacturer's supplier details\n- news_signals: articles gathered by the Perception Agent\n- risk_summary: plain English summary from the Perception Agent\n\nYour job is to perform deep risk analysis and return a structured \nrisk assessment.\nTASK:\n1. PROBABILITY SCORING: Analyze news recency and corroboration to set a disruption probability (0-100%).\n2. IMPACT MODELING: Calculate 'Lead Time Increase' and 'Inventory Runway' (how many weeks until stockout).\n3. TRADE-OFF SIMULATION: You must simulate three distinct scenarios:\n   - Scenario A: \"Status Quo\" (No action, highest risk).\n   - Scenario B: \"Agile Diversion\" (Partial mitigation, balanced cost).\n   - Scenario C: \"Maximum Resilience\" (Full rerouting, high cost).\n\nRISK CONTROL MECHANISMS:\n- If 'Revenue at Risk' exceeds $500k OR 'Risk Score' > 75, flag the 'recommended_escalation' as 'executive'.\n- Ensure 'service_score' is impacted by transit delays (+days).\n\nOUTPUT FORMAT (JSON):\n{\n  \"probability\": number,\n  \"impact\": {\n    \"lead_time_weeks\": number,\n    \"runway_weeks\": number,\n    \"affected_skus\": [\"string\"]\n  },\n  \"scenarios\": [\n    {\n      \"name\": \"string\",\n      \"cost\": number,\n      \"service_level\": number,\n      \"resilience_rating\": number,\n      \"time_to_implement_days\": number\n    }\n  ],\n  \"financials\": {\n    \"daily_burn_rate\": number,\n    \"total_exposure\": number\n  },\n  \"recommended_path\": \"Scenario A/B/C\",\n  \"recommended_escalation\": \"operations | executive\"\n}",
+        "options": {
+          "maxIterations": 10
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        -368,
+        416
+      ],
+      "id": "75949423-0abf-425c-ba82-a9480f84a692",
+      "name": "Risk Intelligence Agent Tool"
+    },
+    {
+      "parameters": {
+        "projectId": {
+          "__rl": true,
+          "value": "htf-weightless-agents",
+          "mode": "list",
+          "cachedResultName": "HTF-weightless-agents"
+        },
+        "modelName": "gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleVertex",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        624
+      ],
+      "id": "a1fb6074-5f72-4c44-b6f1-9aa4edb61df9",
+      "name": "Google Vertex Chat Model2",
+      "credentials": {
+        "googleApi": {
+          "id": "5Rljj2OlP6oKrgk1",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "9e501223-34e5-48eb-a04c-a22959509df8",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "http://localhost:5173"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -976,
+        80
+      ],
+      "id": "1fea9b2a-b5a1-43c9-966f-cb6afbe0e08b",
+      "name": "Webhook",
+      "webhookId": "9e501223-34e5-48eb-a04c-a22959509df8"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -208,
+        208
+      ],
+      "id": "968fac88-ab8e-41b8-827a-90a25cfb224c",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a323d34a-55f6-4889-893d-45015e88e90f",
+              "name": "message",
+              "value": "={{$json.body.chatInput}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -720,
+        208
+      ],
+      "id": "9e937459-d1ff-4a42-8dd4-87f913344b1e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "get-live-news",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -992,
+        256
+      ],
+      "id": "37c3e6c0-7c11-4245-bf23-6cd1319557ae",
+      "name": "Get-Live-News-Webhook",
+      "webhookId": "91035c3e-da03-47b7-91ed-d9ac222c164f"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "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"
+            },
+            {
+              "name": "search_depth",
+              "value": "advanced"
+            },
+            {
+              "name": "include_answer",
+              "value": "={{ true }}"
+            },
+            {
+              "name": "max_results",
+              "value": "10"
+            },
+            {
+              "name": "query",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters4_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        -768,
+        608
+      ],
+      "id": "21933ac5-e5fc-4d16-a884-4939e9932e14",
+      "name": "Tavily API for News"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "Perception Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perception Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Master Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Master Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Perception Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Risk Intelligence Agent Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Master Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Vertex Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Risk Intelligence Agent Tool",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Master Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Master Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get-Live-News-Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily API for News": {
+      "ai_tool": [
+        [
+          {
+            "node": "Perception Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8088dfdb-2131-49e8-81f6-5fdb4662ba8b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3aadc6eaddb545efd1d1b49299c23b97270c088c88e77df00ce601a352cb5c4b"
+  },
+  "id": "hDSB1DIKfED4Zbk5",
+  "tags": []
+}
