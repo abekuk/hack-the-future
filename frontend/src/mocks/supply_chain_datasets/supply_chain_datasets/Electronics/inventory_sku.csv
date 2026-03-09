@@ -1,0 +1,6 @@
+sku_id,on_hand_units,safety_stock_units
+SKU_EDGE_A,900,350
+SKU_EDGE_B,760,300
+SKU_GATE_A,520,250
+SKU_SENS_A,1400,500
+SKU_EDGE_D,1800,650

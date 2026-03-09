@@ -1,0 +1,5 @@
+sku_id,description,customer_tier,criticality,substitutability,price_cad,gross_margin_pct
+SKU_SALAD_A,Salad Kit A,T1,high,low,6.49,0.24
+SKU_SALAD_B,Salad Kit B,T2,high,medium,6.99,0.26
+SKU_BOWL_A,Protein Bowl A,T1,high,low,8.99,0.28
+SKU_SMOOTH_A,Smoothie Base A,T3,medium,high,4.99,0.22

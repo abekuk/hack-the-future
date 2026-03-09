@@ -1,0 +1,9 @@
+part_id,description,is_line_stop,normal_lead_time_days,substitutes,qualified_suppliers,category
+PART_BOLT_A,Grade-8 Bolt A,True,14,PART_BOLT_A_ALT,SUP_MX_FAST;SUP_US_STEEL,automotive
+PART_BRKT_A,Stamped Bracket A,True,21,PART_BRKT_A_ALT,SUP_US_STEEL,automotive
+PART_HOUS_A,Molded Housing A,True,18,,SUP_CA_MOLD,automotive
+PART_SENS_A,Sensor A,True,45,,SUP_CN_ELEC,electronics
+PART_PCB,Control PCB,True,60,,SUP_CN_ELEC,electronics
+PART_WIRE_A,Wiring Harness A,True,30,PART_WIRE_A_ALT,SUP_US_STEEL;SUP_CA_MOLD,automotive
+PART_SCREW,Screw Set,True,12,PART_SCREW_ALT,SUP_MX_FAST;SUP_US_STEEL,automotive
+PART_PACK,Packaging,False,5,,SUP_CA_MOLD,packaging

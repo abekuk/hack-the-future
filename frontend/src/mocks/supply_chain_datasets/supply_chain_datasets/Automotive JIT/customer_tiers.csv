@@ -1,0 +1,4 @@
+tier,otif_target_pct,priority,late_penalty_cad
+T1,0.995,1,15000
+T2,0.98,2,6000
+T3,0.95,3,1500

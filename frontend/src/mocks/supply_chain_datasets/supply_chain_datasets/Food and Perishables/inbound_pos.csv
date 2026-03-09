@@ -1,0 +1,5 @@
+po_id,part_id,qty_units,eta_days,supplier_id,lane_id
+PO_F_2001,ING_LEAF,2400,5,SUP_MX_FARM,MX->CA_reefer_truck
+PO_F_2002,ING_TOM,1800,4,SUP_US_FARM,US->CA_reefer_truck
+PO_F_2003,ING_BERR,1500,4,SUP_US_FARM,US->CA_reefer_truck
+PO_F_2004,ING_DAIRY,2200,6,SUP_US_DAIRY,US->CA_reefer_truck

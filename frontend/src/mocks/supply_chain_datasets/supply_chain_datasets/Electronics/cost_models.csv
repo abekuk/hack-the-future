@@ -1,0 +1,5 @@
+key,value
+expedite_air_cost_per_unit_cad,9.5
+alt_supplier_price_premium_pct,0.18
+overtime_cost_per_hour_cad,52.0
+air_capacity_limit_units,2000.0

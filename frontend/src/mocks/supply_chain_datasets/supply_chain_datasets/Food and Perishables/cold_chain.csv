@@ -1,0 +1,4 @@
+lane_id,temp_excursion_prob
+MX->CA_reefer_truck,0.06
+US->CA_reefer_truck,0.04
+US->CA_air,0.02

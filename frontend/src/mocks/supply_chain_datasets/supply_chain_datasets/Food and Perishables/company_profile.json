@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "company": {
+    "company_key": "FRESHFORK",
+    "name": "FreshFork Foods",
+    "industry": {
+      "primary": "food_perishables",
+      "subsector": "fresh_prepared"
+    }
+  },
+  "kpis": [
+    "margin_at_risk",
+    "stockout_risk",
+    "otif_sla_risk",
+    "mitigation_roi",
+    "time_to_recover",
+    "spoilage_risk"
+  ],
+  "perishability": {
+    "enabled": true
+  },
+  "risk_appetite": {
+    "risk_tolerance": "conservative",
+    "max_acceptable_otif_risk_probability": 0.06,
+    "max_acceptable_stockout_probability": 0.05,
+    "human_approval_required_if_expedite_cost_over_cad": 12000
+  }
+}

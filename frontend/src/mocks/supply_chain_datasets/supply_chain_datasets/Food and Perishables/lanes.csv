@@ -1,0 +1,5 @@
+lane_id,mode,base_transit_days,current_transit_days,temperature_control_required
+MX->CA_reefer_truck,reefer_truck,5,5,True
+US->CA_reefer_truck,reefer_truck,4,4,True
+CA_local_truck,truck,1,1,False
+US->CA_air,air,1,1,True

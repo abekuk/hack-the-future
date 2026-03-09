@@ -1,0 +1,6 @@
+sku_id,description,customer_tier,criticality,substitutability,price_cad,gross_margin_pct
+SKU_EDGE_A,Edge Controller A,T1,high,low,210.0,0.38
+SKU_EDGE_B,Edge Controller B,T2,high,low,175.0,0.34
+SKU_GATE_A,Gateway Unit A,T1,high,low,265.0,0.4
+SKU_SENS_A,Sensor Hub A,T2,medium,medium,120.0,0.3
+SKU_EDGE_D,Edge Controller D (Low-cost),T3,low,high,140.0,0.26

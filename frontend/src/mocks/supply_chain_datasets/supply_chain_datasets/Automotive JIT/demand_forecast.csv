@@ -1,0 +1,5 @@
+sku_id,forecast_daily_units,demand_volatility_cv
+SKU_MOD_A,420,0.2
+SKU_MOD_D,310,0.24
+SKU_MOD_E,520,0.18
+SKU_MOD_F,460,0.19

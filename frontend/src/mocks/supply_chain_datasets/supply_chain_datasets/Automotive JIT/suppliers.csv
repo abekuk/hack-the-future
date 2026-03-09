@@ -1,0 +1,5 @@
+supplier_id,name,country,reliability_otif_pct,financial_distress_score_0_100
+SUP_MX_FAST,Monterrey Fasteners,MX,0.93,16
+SUP_US_STEEL,Great Lakes Steel,US,0.9,22
+SUP_CN_ELEC,Suzhou Electronics,CN,0.88,30
+SUP_CA_MOLD,Ontario Molded Plastics,CA,0.96,12

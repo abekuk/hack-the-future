@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap');
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #0D0D0D;
+  --bg-surface: #1A1A2E;
+  --bg-surface-hover: #232340;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --text-primary: #F0F0F0;
+  --text-secondary: #9CA3AF;
+  --accent-blue: #4285F4;
+  --accent-red: #EA4335;
+  --accent-yellow: #FBBC04;
+  --accent-green: #34A853;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Google Sans Text', 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Google Sans', 'Inter', system-ui, sans-serif;
+}
+
+/* Gemini gradient */
+.gemini-gradient {
+  background: linear-gradient(135deg, #4285F4, #9B72CB, #D96570, #FBBC04, #34A853);
+  background-size: 300% 300%;
+  animation: gemini-shift 8s ease infinite;
+}
+
+.gemini-gradient-text {
+  background: linear-gradient(135deg, #4285F4, #9B72CB, #D96570, #FBBC04, #34A853);
+  background-size: 300% 300%;
+  animation: gemini-shift 8s ease infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes gemini-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes sparkle-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.7; transform: scale(1.15); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.sparkle-pulse {
+  animation: sparkle-pulse 2s ease-in-out infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }

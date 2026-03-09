@@ -1,0 +1,6 @@
+sku_id,forecast_daily_units,demand_volatility_cv
+SKU_EDGE_A,85,0.25
+SKU_EDGE_B,70,0.22
+SKU_GATE_A,55,0.28
+SKU_SENS_A,120,0.2
+SKU_EDGE_D,140,0.26

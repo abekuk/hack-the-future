@@ -1,0 +1,6 @@
+supplier_id,name,country,reliability_otif_pct,financial_distress_score_0_100
+SUP_CN_CHIP,Shenzhen MicroFab,CN,0.9,25
+SUP_MY_PCB,Penang PCB Works,MY,0.92,18
+SUP_US_ENC,Ohio Enclosures,US,0.96,12
+SUP_CA_PACK,Toronto Pack & Ship,CA,0.97,10
+SUP_VN_PASS,Hanoi Passives,VN,0.91,20

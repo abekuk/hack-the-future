@@ -1,0 +1,6 @@
+lane_id,mode,base_transit_days,current_transit_days,temperature_control_required
+CN->CA_ocean,ocean,14,14,False
+CN->CA_air,air,3,3,False
+MY->CA_ocean,ocean,18,18,False
+US->CA_truck,truck,4,4,False
+VN->CA_ocean,ocean,20,20,False

@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "company": {
+    "company_key": "VOLTEDGE",
+    "name": "VoltEdge Controls",
+    "industry": {
+      "primary": "electronics",
+      "subsector": "industrial_iot"
+    }
+  },
+  "inputs_required": [
+    "company_profile",
+    "disruption_feed",
+    "mock_erp_tables"
+  ],
+  "kpis": [
+    "margin_at_risk",
+    "stockout_risk",
+    "otif_sla_risk",
+    "mitigation_roi",
+    "time_to_recover"
+  ],
+  "risk_appetite": {
+    "risk_tolerance": "balanced",
+    "max_acceptable_otif_risk_probability": 0.1,
+    "max_acceptable_stockout_probability": 0.08,
+    "human_approval_required_if_expedite_cost_over_cad": 15000
+  }
+}

@@ -1,0 +1,5 @@
+sku_id,on_hand_units,safety_stock_units
+SKU_SALAD_A,5400,3600
+SKU_SALAD_B,3100,2400
+SKU_BOWL_A,2100,1700
+SKU_SMOOTH_A,4800,3200

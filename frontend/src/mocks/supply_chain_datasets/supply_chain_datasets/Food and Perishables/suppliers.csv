@@ -1,0 +1,6 @@
+supplier_id,name,country,reliability_otif_pct,financial_distress_score_0_100
+SUP_CA_FARM,Ontario Greens Co-op,CA,0.95,14
+SUP_US_FARM,California Valley Produce,US,0.92,18
+SUP_MX_FARM,Sinaloa Fresh,MX,0.9,22
+SUP_CA_PACK,GTA Packaging Foods,CA,0.97,10
+SUP_US_DAIRY,Midwest Dairy Ingredients,US,0.91,20

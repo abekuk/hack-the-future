@@ -1,0 +1,15 @@
+supplier_id,part_id,unit_cost_cad,min_order_qty,lead_time_days,lane_id
+SUP_CA_FARM,ING_LEAF,3.68,200,2,CA_local_truck
+SUP_US_FARM,ING_LEAF,3.2,200,2,US->CA_reefer_truck
+SUP_MX_FARM,ING_LEAF,3.2,200,2,MX->CA_reefer_truck
+SUP_US_FARM,ING_TOM,2.4,200,3,US->CA_reefer_truck
+SUP_MX_FARM,ING_TOM,2.4,200,3,MX->CA_reefer_truck
+SUP_US_FARM,ING_BERR,6.5,200,2,US->CA_reefer_truck
+SUP_CA_FARM,ING_BERR,7.48,200,2,CA_local_truck
+SUP_US_DAIRY,ING_DAIRY,2.09,200,7,US->CA_reefer_truck
+SUP_US_FARM,ING_PROT,4.8,200,21,US->CA_reefer_truck
+SUP_CA_FARM,ING_PROT,5.52,200,21,CA_local_truck
+SUP_CA_PACK,PKG_TRAY,0.18,5000,11,CA_local_truck
+SUP_CA_PACK,PKG_FILM,0.06,5000,13,CA_local_truck
+SUP_CA_PACK,PKG_LABEL,0.03,5000,8,CA_local_truck
+SUP_CA_PACK,PKG_BOX,0.22,5000,9,CA_local_truck
