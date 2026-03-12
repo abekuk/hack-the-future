@@ -31,7 +31,7 @@ export default function SupplierHealth({ company }) {
 
   // Calculate aggregate health
   const avgOtif = suppliers.reduce((sum, s) => sum + (parseOtif(s.reliability_otif_pct) || 0), 0) / suppliers.length;
-  const atRiskCount = suppliers.filter(s => parseFloat(s.reliability_otif_pct) < 95).length;
+  const atRiskCount = suppliers.filter(s => parseOtif(s.reliability_otif_pct) < 95).length;
 
   return (
     <motion.div

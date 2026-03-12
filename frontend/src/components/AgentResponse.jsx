@@ -102,7 +102,7 @@ function ResponsibleAISection({ response }) {
   );
 }
 
-export default function AgentResponse({ stage, response, streamedSteps, onFeedback, companyId }) {
+export default function AgentResponse({ stage, response, streamedSteps, onFeedback, onRegenerate, regeneratingKey, onSelectPlan, selectingPlan, selectedPlanName, companyId }) {
   const showRisk = ['risk', 'tradeoff', 'actions', 'done'].includes(stage);
   const showTradeoff = ['tradeoff', 'actions', 'done'].includes(stage);
   const showActions = ['actions', 'done'].includes(stage);
@@ -158,6 +158,9 @@ export default function AgentResponse({ stage, response, streamedSteps, onFeedba
               options={response.mitigation_options}
               simulation={response._simulation}
               revenueAtRisk={response.revenue_at_risk}
+              onSelectPlan={onSelectPlan}
+              selectingPlan={selectingPlan}
+              selectedPlanName={selectedPlanName}
             />
           </motion.div>
         )}
@@ -166,7 +169,7 @@ export default function AgentResponse({ stage, response, streamedSteps, onFeedba
       <AnimatePresence>
         {showActions && response && (
           <motion.div key="actions" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <ActionDrafts actions={response.actions} riskScore={response.risk_score} />
+            <ActionDrafts actions={response.actions} riskScore={response.risk_score} onRegenerate={onRegenerate} regeneratingKey={regeneratingKey} selectingPlan={selectingPlan} />
           </motion.div>
         )}
       </AnimatePresence>

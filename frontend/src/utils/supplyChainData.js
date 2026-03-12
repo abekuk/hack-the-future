@@ -53,6 +53,7 @@ const INDUSTRIES = [
         headquarters: 'Toronto, ON',
         employees: 280,
         revenue_annual: 38000000,
+        margin_pct: 0.30, // Electronics: ~30% gross margin
     },
     {
         id: 'ironride',
@@ -64,6 +65,7 @@ const INDUSTRIES = [
         headquarters: 'Detroit, MI',
         employees: 450,
         revenue_annual: 62000000,
+        margin_pct: 0.18, // Automotive Tier-2: ~18% gross margin
     },
     {
         id: 'freshfork',
@@ -75,6 +77,7 @@ const INDUSTRIES = [
         headquarters: 'Vancouver, BC',
         employees: 520,
         revenue_annual: 71000000,
+        margin_pct: 0.12, // Fresh food/perishables: ~12% gross margin
     },
 ];
 
@@ -104,7 +107,7 @@ function buildCompanies() {
             name: profile.company.name,
             industry: ind.displayIndustry,
             critical_component: criticalPart?.description || 'Unknown',
-            margin_pct: 0.25,
+            margin_pct: ind.margin_pct,
             lead_time_days: avgLeadTime,
             inventory_buffer: profile.risk_appetite?.risk_tolerance === 'conservative' ? 'high'
                 : profile.risk_appetite?.risk_tolerance === 'aggressive' ? 'low' : 'medium',

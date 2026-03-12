@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { Check, X, RotateCcw, Lock, ShieldCheck, UserCheck } from 'lucide-react';
+import { Check, X, RotateCcw, Lock, ShieldCheck, UserCheck, RefreshCw, Loader2, SkipForward } from 'lucide-react';
 
 // ============================================================
 // HITL AUTONOMY CLASSIFICATION
@@ -84,10 +84,28 @@ function CopyButton({ text }) {
   );
 }
 
-function ApprovalBar({ actionKey, status, onApprove, onReject }) {
+function ApprovalBar({ actionKey, status, isRegenerating, onApprove, onReject, onRegenerate }) {
   const [rejectReason, setRejectReason] = useState('');
   const [showRejectInput, setShowRejectInput] = useState(false);
+  const [regeneratePrompt, setRegeneratePrompt] = useState('');
+  const [showRegenerateInput, setShowRegenerateInput] = useState(false);
 
+  // ── Regenerating state ──
+  if (isRegenerating) {
+    return (
+      <div className="flex items-center gap-3 px-4 py-3 rounded-b-xl" style={{ background: 'rgba(66,133,244,0.08)', borderTop: '1px solid rgba(66,133,244,0.2)' }}>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+        >
+          <Loader2 size={14} style={{ color: 'var(--accent-blue)' }} />
+        </motion.div>
+        <span className="text-xs font-semibold" style={{ color: 'var(--accent-blue)' }}>Regenerating with your feedback…</span>
+      </div>
+    );
+  }
+
+  // ── Approved state ──
   if (status === 'approved') {
     return (
       <div className="flex items-center gap-2 px-4 py-2.5 rounded-b-xl" style={{ background: 'rgba(52,168,83,0.08)', borderTop: '1px solid rgba(52,168,83,0.2)' }}>
@@ -97,18 +115,91 @@ function ApprovalBar({ actionKey, status, onApprove, onReject }) {
     );
   }
 
+  // ── Rejected state — show regenerate option ──
   if (status === 'rejected') {
+    if (showRegenerateInput) {
+      return (
+        <div className="px-4 py-3 flex flex-col gap-2.5" style={{ borderTop: '1px solid rgba(234,67,53,0.2)', background: 'rgba(66,133,244,0.04)' }}>
+          <div className="flex items-center gap-2">
+            <RefreshCw size={12} style={{ color: 'var(--accent-blue)' }} />
+            <span className="text-xs font-semibold" style={{ color: 'var(--accent-blue)' }}>How should this be improved?</span>
+          </div>
+          <textarea
+            value={regeneratePrompt}
+            onChange={e => setRegeneratePrompt(e.target.value)}
+            placeholder="E.g., 'Make the tone more urgent', 'Include alternative supplier options', 'Add specific deadlines'…"
+            rows={3}
+            className="w-full px-3 py-2 rounded-lg text-xs resize-none"
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(66,133,244,0.3)',
+              color: 'var(--text-primary)',
+              outline: 'none',
+              lineHeight: '1.5',
+            }}
+            autoFocus
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                if (regeneratePrompt.trim()) {
+                  onRegenerate(actionKey, regeneratePrompt.trim());
+                  setShowRegenerateInput(false);
+                  setRegeneratePrompt('');
+                }
+              }}
+              disabled={!regeneratePrompt.trim()}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all"
+              style={{
+                background: regeneratePrompt.trim() ? 'rgba(66,133,244,0.2)' : 'rgba(66,133,244,0.08)',
+                color: regeneratePrompt.trim() ? 'var(--accent-blue)' : 'var(--text-secondary)',
+                border: `1px solid ${regeneratePrompt.trim() ? 'rgba(66,133,244,0.4)' : 'rgba(66,133,244,0.15)'}`,
+                cursor: regeneratePrompt.trim() ? 'pointer' : 'not-allowed',
+              }}
+            >
+              <RefreshCw size={11} /> Regenerate
+            </button>
+            <button
+              onClick={() => { setShowRegenerateInput(false); setRegeneratePrompt(''); }}
+              className="py-2 px-3 rounded-lg text-xs"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex items-center gap-2 px-4 py-2.5 rounded-b-xl" style={{ background: 'rgba(234,67,53,0.08)', borderTop: '1px solid rgba(234,67,53,0.2)' }}>
         <X size={14} style={{ color: 'var(--accent-red)' }} />
         <span className="text-xs font-semibold" style={{ color: 'var(--accent-red)' }}>Rejected by operator</span>
-        <button onClick={() => onApprove(actionKey)} className="ml-auto flex items-center gap-1 text-xs px-2 py-1 rounded-lg" style={{ color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.06)' }}>
-          <RotateCcw size={10} /> Undo
-        </button>
+        <div className="ml-auto flex items-center gap-1.5">
+          <button
+            onClick={() => setShowRegenerateInput(true)}
+            className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors"
+            style={{
+              color: 'var(--accent-blue)',
+              background: 'rgba(66,133,244,0.12)',
+              border: '1px solid rgba(66,133,244,0.25)',
+            }}
+          >
+            <RefreshCw size={10} /> Regenerate
+          </button>
+          <button
+            onClick={() => onApprove(actionKey)}
+            className="flex items-center gap-1 text-xs px-2 py-1.5 rounded-lg"
+            style={{ color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.06)' }}
+          >
+            <RotateCcw size={10} /> Undo
+          </button>
+        </div>
       </div>
     );
   }
 
+  // ── Reject input state (entering reason) ──
   if (showRejectInput) {
     return (
       <div className="px-4 py-3 flex flex-col gap-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
@@ -131,6 +222,7 @@ function ApprovalBar({ actionKey, status, onApprove, onReject }) {
     );
   }
 
+  // ── Default: approve/reject buttons ──
   return (
     <div className="flex items-center gap-2 px-4 py-2.5" style={{ borderTop: '1px solid var(--border-subtle)' }}>
       <span className="text-xs mr-auto" style={{ color: 'var(--text-secondary)' }}>Human-in-the-loop review:</span>
@@ -144,7 +236,26 @@ function ApprovalBar({ actionKey, status, onApprove, onReject }) {
   );
 }
 
-function EmailCard({ action, status, onApprove, onReject }) {
+// ── Version indicator (shows when content has been regenerated) ──
+function RegeneratedBadge({ version }) {
+  if (!version || version <= 1) return null;
+  return (
+    <motion.span
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="text-xs font-semibold px-2 py-0.5 rounded-full"
+      style={{
+        background: 'rgba(66,133,244,0.15)',
+        color: 'var(--accent-blue)',
+        border: '1px solid rgba(66,133,244,0.25)',
+      }}
+    >
+      v{version} — Regenerated
+    </motion.span>
+  );
+}
+
+function EmailCard({ action, status, isRegenerating, version, onApprove, onReject, onRegenerate }) {
   return (
     <div className="overflow-hidden">
       <div
@@ -155,19 +266,22 @@ function EmailCard({ action, status, onApprove, onReject }) {
           <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>To: {action.to}</p>
           <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{action.subject}</p>
         </div>
-        <CopyButton text={action.body} />
+        <div className="flex items-center gap-2">
+          <RegeneratedBadge version={version} />
+          <CopyButton text={action.body} />
+        </div>
       </div>
       <div className="p-4">
         <pre className="text-xs whitespace-pre-wrap leading-relaxed font-sans" style={{ color: 'var(--text-secondary)' }}>
           {action.body}
         </pre>
       </div>
-      <ApprovalBar actionKey="supplier_email" status={status} onApprove={onApprove} onReject={onReject} />
+      <ApprovalBar actionKey="supplier_email" status={status} isRegenerating={isRegenerating} onApprove={onApprove} onReject={onReject} onRegenerate={onRegenerate} />
     </div>
   );
 }
 
-function POCard({ action, status, onApprove, onReject }) {
+function POCard({ action, status, isRegenerating, version, onApprove, onReject, onRegenerate }) {
   const fields = [
     { label: 'Type', value: action.type },
     { label: 'SKU', value: action.sku },
@@ -188,7 +302,10 @@ function POCard({ action, status, onApprove, onReject }) {
         className="px-4 py-3 flex items-center justify-between"
         style={{ background: 'rgba(251,188,4,0.08)', borderBottom: '1px solid var(--border-subtle)' }}
       >
-        <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Purchase Order Draft</p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Purchase Order Draft</p>
+          <RegeneratedBadge version={version} />
+        </div>
         <CopyButton text={JSON.stringify(action, null, 2)} />
       </div>
       <div className="p-4 grid grid-cols-2 gap-3">
@@ -199,12 +316,12 @@ function POCard({ action, status, onApprove, onReject }) {
           </div>
         ))}
       </div>
-      <ApprovalBar actionKey="po_suggestion" status={status} onApprove={onApprove} onReject={onReject} />
+      <ApprovalBar actionKey="po_suggestion" status={status} isRegenerating={isRegenerating} onApprove={onApprove} onReject={onReject} onRegenerate={onRegenerate} />
     </div>
   );
 }
 
-function EscalationCard({ action, status, onApprove, onReject }) {
+function EscalationCard({ action, status, isRegenerating, version, onApprove, onReject, onRegenerate }) {
   return (
     <div className="overflow-hidden">
       <div
@@ -213,28 +330,32 @@ function EscalationCard({ action, status, onApprove, onReject }) {
       >
         <div>
           <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>To: {action.to}</p>
-          <span
-            className="text-xs font-semibold px-2 py-0.5 rounded-full mt-1 inline-block"
-            style={{ background: 'rgba(234,67,53,0.2)', color: 'var(--accent-red)' }}
-          >
-            {action.priority?.toUpperCase()} PRIORITY
-          </span>
+          <div className="flex items-center gap-2 mt-1">
+            <span
+              className="text-xs font-semibold px-2 py-0.5 rounded-full inline-block"
+              style={{ background: 'rgba(234,67,53,0.2)', color: 'var(--accent-red)' }}
+            >
+              {action.priority?.toUpperCase()} PRIORITY
+            </span>
+            <RegeneratedBadge version={version} />
+          </div>
         </div>
         <CopyButton text={action.note} />
       </div>
       <div className="p-4">
         <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{action.note}</p>
       </div>
-      <ApprovalBar actionKey="escalation" status={status} onApprove={onApprove} onReject={onReject} />
+      <ApprovalBar actionKey="escalation" status={status} isRegenerating={isRegenerating} onApprove={onApprove} onReject={onReject} onRegenerate={onRegenerate} />
     </div>
   );
 }
 
 const TABS = ['Supplier Email', 'PO Suggestion', 'Escalation'];
 
-export default function ActionDrafts({ actions, riskScore = 50 }) {
+export default function ActionDrafts({ actions, riskScore = 50, onRegenerate, regeneratingKey, selectingPlan }) {
   const [activeTab, setActiveTab] = useState(0);
   const [approvalStatus, setApprovalStatus] = useState({});
+  const [versions, setVersions] = useState({}); // track regeneration versions
 
   // Safe fallback if LLM omitted actions entirely
   const safeActions = actions || {};
@@ -265,6 +386,19 @@ export default function ActionDrafts({ actions, riskScore = 50 }) {
     } catch (e) { console.warn('Failed to persist rejection:', e); }
   };
 
+  const handleRegenerate = async (key, prompt) => {
+    if (!onRegenerate) return;
+    try {
+      await onRegenerate(key, safeActions[key], prompt);
+      // Reset approval status so user can review the new version
+      setApprovalStatus(prev => ({ ...prev, [key]: undefined }));
+      // Increment version counter
+      setVersions(prev => ({ ...prev, [key]: (prev[key] || 1) + 1 }));
+    } catch (err) {
+      console.error('Regeneration failed:', err);
+    }
+  };
+
   const availableTabs = TABS.filter((t, i) => {
     if (i === 0) return !!safeActions.supplier_email;
     if (i === 1) return !!safeActions.po_suggestion;
@@ -293,9 +427,24 @@ export default function ActionDrafts({ actions, riskScore = 50 }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: 'var(--text-secondary)' }}>
-        Action Drafts — Human-in-the-Loop Review
-      </h3>
+      <div className="flex items-center gap-3 mb-4">
+        <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
+          Action Drafts — Human-in-the-Loop Review
+        </h3>
+        {selectingPlan && (
+          <motion.div
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
+            style={{ background: 'rgba(66,133,244,0.12)', border: '1px solid rgba(66,133,244,0.25)' }}
+          >
+            <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
+              <Loader2 size={11} style={{ color: 'var(--accent-blue)' }} />
+            </motion.div>
+            <span className="text-xs font-semibold" style={{ color: 'var(--accent-blue)' }}>Generating new action drafts…</span>
+          </motion.div>
+        )}
+      </div>
 
       {/* Tab bar */}
       <div className="flex gap-1 mb-4 p-1 rounded-xl" style={{ background: 'var(--bg-surface)' }}>
@@ -304,6 +453,7 @@ export default function ActionDrafts({ actions, riskScore = 50 }) {
           const status = approvalStatus[tabKey];
           const tier = actionTiers[tabKey];
           const tierColor = AUTONOMY_TIERS[tier]?.color || 'var(--text-secondary)';
+          const isTabRegenerating = regeneratingKey === tabKey;
           return (
             <button
               key={tab}
@@ -315,9 +465,14 @@ export default function ActionDrafts({ actions, riskScore = 50 }) {
                 border: safeActiveTabIdx === i ? '1px solid rgba(66,133,244,0.3)' : '1px solid transparent',
               }}
             >
-              {status === 'approved' && <Check size={10} style={{ color: 'var(--accent-green)' }} />}
-              {status === 'rejected' && <X size={10} style={{ color: 'var(--accent-red)' }} />}
-              {!status && <span style={{ width: 6, height: 6, borderRadius: '50%', background: tierColor, display: 'inline-block', flexShrink: 0 }} />}
+              {isTabRegenerating && (
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
+                  <Loader2 size={10} style={{ color: 'var(--accent-blue)' }} />
+                </motion.div>
+              )}
+              {!isTabRegenerating && status === 'approved' && <Check size={10} style={{ color: 'var(--accent-green)' }} />}
+              {!isTabRegenerating && status === 'rejected' && <X size={10} style={{ color: 'var(--accent-red)' }} />}
+              {!isTabRegenerating && !status && <span style={{ width: 6, height: 6, borderRadius: '50%', background: tierColor, display: 'inline-block', flexShrink: 0 }} />}
               {tab}
             </button>
           );
@@ -329,19 +484,43 @@ export default function ActionDrafts({ actions, riskScore = 50 }) {
         {currentTabName === 'Supplier Email' && safeActions.supplier_email && (
           <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${AUTONOMY_TIERS[actionTiers.supplier_email].border}` }}>
             <AutonomyBadge tier={actionTiers.supplier_email} />
-            <EmailCard action={safeActions.supplier_email} status={approvalStatus.supplier_email} onApprove={handleApprove} onReject={handleReject} />
+            <EmailCard
+              action={safeActions.supplier_email}
+              status={approvalStatus.supplier_email}
+              isRegenerating={regeneratingKey === 'supplier_email'}
+              version={versions.supplier_email}
+              onApprove={handleApprove}
+              onReject={handleReject}
+              onRegenerate={handleRegenerate}
+            />
           </div>
         )}
         {currentTabName === 'PO Suggestion' && safeActions.po_suggestion && (
           <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${AUTONOMY_TIERS[actionTiers.po_suggestion].border}` }}>
             <AutonomyBadge tier={actionTiers.po_suggestion} />
-            <POCard action={safeActions.po_suggestion} status={approvalStatus.po_suggestion} onApprove={handleApprove} onReject={handleReject} />
+            <POCard
+              action={safeActions.po_suggestion}
+              status={approvalStatus.po_suggestion}
+              isRegenerating={regeneratingKey === 'po_suggestion'}
+              version={versions.po_suggestion}
+              onApprove={handleApprove}
+              onReject={handleReject}
+              onRegenerate={handleRegenerate}
+            />
           </div>
         )}
         {currentTabName === 'Escalation' && safeActions.escalation && (
           <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${AUTONOMY_TIERS[actionTiers.escalation].border}` }}>
             <AutonomyBadge tier={actionTiers.escalation} />
-            <EscalationCard action={safeActions.escalation} status={approvalStatus.escalation} onApprove={handleApprove} onReject={handleReject} />
+            <EscalationCard
+              action={safeActions.escalation}
+              status={approvalStatus.escalation}
+              isRegenerating={regeneratingKey === 'escalation'}
+              version={versions.escalation}
+              onApprove={handleApprove}
+              onReject={handleReject}
+              onRegenerate={handleRegenerate}
+            />
           </div>
         )}
         {currentTabName === 'Escalation' && !safeActions.escalation && (

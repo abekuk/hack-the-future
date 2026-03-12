@@ -18,8 +18,9 @@ export default function Dashboard() {
   const [selectedDisruption, setSelectedDisruption] = useState(null);
   const [showTrace, setShowTrace] = useState(true);
   const [isFetchingLive, setIsFetchingLive] = useState(false);
+  const [selectedPlanName, setSelectedPlanName] = useState(null);
 
-  const { stage, response, streamedSteps, analyze, sendFeedback, reset, restore } = useAgent();
+  const { stage, response, streamedSteps, regeneratingKey, selectingPlan, analyze, regenerateAction, selectPlan, sendFeedback, reset, restore } = useAgent();
   const companyCache = useRef({});
   const fetchIdRef = useRef(0); // Race condition guard
 
@@ -33,7 +34,7 @@ export default function Dashboard() {
   // Fetch live news with race condition protection
   const fetchLiveNews = useCallback((company, forceRefresh = false) => {
     if (!company) return;
-    
+
     // Increment fetch ID — any older in-flight request will be stale
     const currentFetchId = ++fetchIdRef.current;
 
@@ -84,6 +85,7 @@ export default function Dashboard() {
 
   const handleDisruptionSelect = (disruption) => {
     setSelectedDisruption(disruption);
+    setSelectedPlanName(null);
     analyze(selectedCompany.id, disruption);
   };
 
@@ -101,6 +103,22 @@ export default function Dashboard() {
     });
   };
 
+  const handleRegenerate = async (actionKey, currentAction, userPrompt) => {
+    if (!selectedCompany || !selectedDisruption) return;
+    return regenerateAction(selectedCompany.id, selectedDisruption.id, actionKey, currentAction, userPrompt);
+  };
+
+  const handleSelectPlan = async (plan) => {
+    if (!selectedCompany || !selectedDisruption) return;
+    setSelectedPlanName(plan.option);
+    try {
+      const currentActions = response?.actions || {};
+      await selectPlan(selectedCompany.id, selectedDisruption.id, plan, currentActions);
+    } catch (err) {
+      console.error('Select plan failed:', err);
+    }
+  };
+
   return (
     <div
       className="flex flex-col min-h-screen"
@@ -114,7 +132,7 @@ export default function Dashboard() {
         <div className="flex items-center gap-3">
           <img src="/gemini-logo.png" alt="Gemini" width="28" height="28" />
           <GeminiGradientText className="text-base font-semibold">
-            Supply Chain Resilience Agent
+            Weightless Agent
           </GeminiGradientText>
         </div>
 
@@ -210,6 +228,11 @@ export default function Dashboard() {
             response={response}
             streamedSteps={streamedSteps}
             onFeedback={handleFeedback}
+            onRegenerate={handleRegenerate}
+            regeneratingKey={regeneratingKey}
+            onSelectPlan={handleSelectPlan}
+            selectingPlan={selectingPlan}
+            selectedPlanName={selectedPlanName}
             companyId={selectedCompany?.id}
           />
         </main>

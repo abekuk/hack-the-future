@@ -1112,3 +1112,271 @@ export function getFeedbackCount(companyId) {
     return (all[companyId] || []).length;
   } catch { return 0; }
 }
+
+// ============================================================
+// ACTION REGENERATION — Re-generates a single action draft
+// using the user's improvement prompt via n8n/Gemini
+// ============================================================
+
+const ACTION_SCHEMA_HINTS = {
+  supplier_email: '{"to": "<email>", "subject": "<subject>", "body": "<full email body>"}',
+  po_suggestion: '{"type": "<order type>", "sku": "<sku>", "quantity": <int>, "estimated_cost": <int>, "carrier": "<carrier>", "estimated_arrival": "<date>"}',
+  escalation: '{"to": "<email>", "priority": "<high|medium|low>", "note": "<escalation note>"}',
+};
+
+const ACTION_LABELS = {
+  supplier_email: 'Supplier Email',
+  po_suggestion: 'Purchase Order Suggestion',
+  escalation: 'Escalation Notice',
+};
+
+/**
+ * Regenerates a single action draft based on user feedback.
+ * Sends the current action + improvement prompt to n8n/Gemini and returns the new action.
+ */
+export async function regenerateAction(companyId, disruptionId, actionKey, currentAction, userPrompt) {
+  const company = companiesData.find(c => c.id === companyId);
+  let disruption = (disruptionsData[companyId] || []).find(d => d.id === disruptionId);
+  if (!disruption && liveNewsCache[companyId]?.data) {
+    disruption = liveNewsCache[companyId].data.find(d => d.id === disruptionId);
+  }
+  if (!disruption) {
+    disruption = { id: disruptionId, title: 'Unknown Disruption', type: 'logistics', severity: 'medium', details: '' };
+  }
+
+  const label = ACTION_LABELS[actionKey] || actionKey;
+  const schema = ACTION_SCHEMA_HINTS[actionKey] || '{}';
+
+  const chatInput = `
+TASK: Regenerate a Single Action Draft
+
+You previously generated a ${label} for a supply chain disruption response. The human reviewer has REJECTED it and provided the following improvement instructions.
+
+COMPANY: ${company?.name || companyId} (${company?.industry || 'Unknown'})
+DISRUPTION: ${disruption.title}
+Details: ${disruption.details || 'N/A'}
+
+CURRENT ${label.toUpperCase()} (REJECTED):
+${JSON.stringify(currentAction, null, 2)}
+
+USER'S IMPROVEMENT INSTRUCTIONS:
+"${userPrompt}"
+
+INSTRUCTIONS:
+1. Generate a NEW, IMPROVED version of this ${label} that addresses the user's feedback.
+2. Keep all the same structural fields but rewrite the content based on the user's instructions.
+3. Maintain professionalism and accuracy.
+4. Return ONLY the JSON object for this single action — no wrapping, no markdown, no commentary.
+
+REQUIRED JSON SCHEMA:
+${schema}
+
+RESPONSE FORMAT:
+- Return ONLY a raw JSON object. No text before/after. No markdown. No commentary.
+  `.trim();
+
+  if (MODE === 'mock') {
+    // In mock mode, simulate a small change
+    await new Promise(r => setTimeout(r, 1500));
+    const mockRegenerated = { ...currentAction };
+    if (actionKey === 'supplier_email') {
+      mockRegenerated.body = `[Regenerated based on: "${userPrompt}"]\n\n${currentAction.body}`;
+      mockRegenerated.subject = `${currentAction.subject} (Revised)`;
+    } else if (actionKey === 'po_suggestion') {
+      mockRegenerated.type = `${currentAction.type || 'Emergency'} (Revised)`;
+    } else if (actionKey === 'escalation') {
+      mockRegenerated.note = `[Revised per feedback: "${userPrompt}"]\n\n${currentAction.note}`;
+    }
+    return mockRegenerated;
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 120000); // 2 min timeout
+
+    const res = await fetch(N8N_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chatInput,
+        companyId,
+        disruptionId,
+        actionKey,
+        timestamp: new Date().toISOString(),
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+
+    if (!res.ok) throw new Error(`n8n returned ${res.status}`);
+
+    const rawResponse = await res.text();
+    console.log(`=== REGENERATION RAW RESPONSE (${actionKey}) ===`, rawResponse);
+
+    // Parse JSON from response (handle n8n wrapper formats)
+    let parsed;
+    try {
+      parsed = JSON.parse(rawResponse);
+      // n8n may wrap in { output: "..." } or { text: "..." }
+      const innerText = parsed.output || parsed.text || (typeof parsed === 'string' ? parsed : null);
+      if (innerText && typeof innerText === 'string') {
+        const clean = innerText.replace(/^```json\s*/mi, '').replace(/```\s*$/mi, '').trim();
+        const jsonMatch = clean.match(/\{[\s\S]*\}/);
+        parsed = JSON.parse(jsonMatch ? jsonMatch[0] : clean);
+      }
+      // If parsed already has the right shape (to/subject/body etc.), use directly
+    } catch (e) {
+      // Try parsing the raw text directly
+      const clean = rawResponse.replace(/^```json\s*/mi, '').replace(/```\s*$/mi, '').trim();
+      const jsonMatch = clean.match(/\{[\s\S]*\}/);
+      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : clean);
+    }
+
+    console.log(`=== REGENERATED ACTION (${actionKey}) ===`, parsed);
+    return parsed;
+  } catch (err) {
+    console.error(`Regeneration failed for ${actionKey}:`, err.message);
+    // Return a lightly modified version as fallback
+    const fallback = { ...currentAction };
+    if (actionKey === 'supplier_email') {
+      fallback.body = `[Auto-revised based on your feedback: "${userPrompt}"]\n\n${currentAction.body}`;
+    } else if (actionKey === 'escalation') {
+      fallback.note = `[Auto-revised based on your feedback: "${userPrompt}"]\n\n${currentAction.note}`;
+    }
+    return fallback;
+  }
+}
+
+/**
+ * Regenerates ALL action drafts (email, PO, escalation) aligned to a user-selected mitigation plan.
+ * Called when the operator picks a different plan from the TradeoffTable.
+ */
+export async function regenerateAllActions(companyId, disruptionId, selectedPlan, currentActions) {
+  const company = companiesData.find(c => c.id === companyId);
+  let disruption = (disruptionsData[companyId] || []).find(d => d.id === disruptionId);
+  if (!disruption && liveNewsCache[companyId]?.data) {
+    disruption = liveNewsCache[companyId].data.find(d => d.id === disruptionId);
+  }
+  if (!disruption) {
+    disruption = { id: disruptionId, title: 'Unknown Disruption', type: 'logistics', severity: 'medium', details: '' };
+  }
+
+  const chatInput = `
+TASK: Regenerate All Action Drafts for a Different Mitigation Plan
+
+The operator has reviewed the supply chain disruption analysis and has chosen a DIFFERENT mitigation strategy than the one originally recommended. You must now regenerate ALL action drafts (supplier email, purchase order, and escalation notice) to align with the operator's chosen plan.
+
+COMPANY: ${company?.name || companyId} (${company?.industry || 'Unknown'})
+Region: ${company?.region || 'Unknown'}
+Critical Component: ${company?.critical_component || 'Unknown'}
+
+DISRUPTION: ${disruption.title}
+Details: ${disruption.details || 'N/A'}
+Severity: ${disruption.severity}
+
+OPERATOR'S SELECTED MITIGATION PLAN:
+Name: ${selectedPlan.option}
+Cost: $${selectedPlan.cost}
+Service Score: ${selectedPlan.service_score ?? selectedPlan.service ?? 'N/A'}/10
+Resilience Score: ${selectedPlan.resilience_score ?? selectedPlan.resilience ?? 'N/A'}/10
+Pros: ${(selectedPlan.pros || []).join(', ')}
+Cons: ${(selectedPlan.cons || []).join(', ')}
+
+PREVIOUS ACTION DRAFTS (for reference on format and contacts):
+${JSON.stringify(currentActions, null, 2)}
+
+INSTRUCTIONS:
+1. Rewrite the supplier_email to reflect the SELECTED plan (not the previously recommended one). Reference the specific strategy, costs, and timeline.
+2. Rewrite the po_suggestion to match the SELECTED plan's procurement approach, quantities, and costs.
+3. Rewrite the escalation notice to reference the SELECTED plan and explain why the operator chose it.
+4. Keep the same contacts (to fields) from the previous drafts.
+5. Return ONLY the JSON object below — no wrapping, no markdown, no commentary.
+
+REQUIRED JSON SCHEMA:
+{
+  "supplier_email": {"to": "<email>", "subject": "<subject>", "body": "<full email body>"},
+  "po_suggestion": {"type": "<order type>", "sku": "<sku>", "quantity": <int>, "estimated_cost": <int>, "carrier": "<carrier>", "estimated_arrival": "<date>"},
+  "escalation": {"to": "<email>", "priority": "<high|medium|low>", "note": "<escalation note>"}
+}
+
+RESPONSE FORMAT:
+- Return ONLY a raw JSON object. No text before/after. No markdown. No commentary.
+  `.trim();
+
+  if (MODE === 'mock') {
+    await new Promise(r => setTimeout(r, 2000));
+    const mock = { ...currentActions };
+    if (mock.supplier_email) {
+      mock.supplier_email = {
+        ...mock.supplier_email,
+        subject: `Re: ${selectedPlan.option} — ${disruption.title}`,
+        body: `Dear Supplier Team,\n\nFollowing our review of the current disruption "${disruption.title}", our team has decided to proceed with the "${selectedPlan.option}" mitigation strategy (estimated cost: $${selectedPlan.cost?.toLocaleString()}).\n\n${mock.supplier_email.body.split('\n').slice(1).join('\n')}`,
+      };
+    }
+    if (mock.po_suggestion) {
+      mock.po_suggestion = {
+        ...mock.po_suggestion,
+        type: selectedPlan.option,
+        estimated_cost: selectedPlan.cost || mock.po_suggestion.estimated_cost,
+      };
+    }
+    if (mock.escalation) {
+      mock.escalation = {
+        ...mock.escalation,
+        note: `Operator has selected "${selectedPlan.option}" (Cost: $${selectedPlan.cost?.toLocaleString()}) over the AI-recommended option. ${mock.escalation.note}`,
+      };
+    }
+    return mock;
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 180000);
+
+    const res = await fetch(N8N_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chatInput,
+        companyId,
+        disruptionId,
+        selectedPlan: selectedPlan.option,
+        timestamp: new Date().toISOString(),
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error(`n8n returned ${res.status}`);
+
+    const rawResponse = await res.text();
+    console.log('=== REGENERATE ALL ACTIONS RAW RESPONSE ===', rawResponse);
+
+    let parsed;
+    try {
+      parsed = JSON.parse(rawResponse);
+      const innerText = parsed.output || parsed.text || (typeof parsed === 'string' ? parsed : null);
+      if (innerText && typeof innerText === 'string') {
+        const clean = innerText.replace(/^```json\s*/mi, '').replace(/```\s*$/mi, '').trim();
+        const jsonMatch = clean.match(/\{[\s\S]*\}/);
+        parsed = JSON.parse(jsonMatch ? jsonMatch[0] : clean);
+      }
+    } catch (e) {
+      const clean = rawResponse.replace(/^```json\s*/mi, '').replace(/```\s*$/mi, '').trim();
+      const jsonMatch = clean.match(/\{[\s\S]*\}/);
+      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : clean);
+    }
+
+    console.log('=== REGENERATED ALL ACTIONS ===', parsed);
+    return parsed;
+  } catch (err) {
+    console.error('Regenerate all actions failed:', err.message);
+    // Fallback: return modified current actions
+    const fallback = { ...currentActions };
+    if (fallback.supplier_email) {
+      fallback.supplier_email = { ...fallback.supplier_email, subject: `[${selectedPlan.option}] ${fallback.supplier_email.subject}` };
+    }
+    return fallback;
+  }
+}
