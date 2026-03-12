@@ -5,6 +5,11 @@
     "orders_affected": 14,
     "sla_risk": 0.78,
     "stockout_probability": 0.65,
+    "reasoning": {
+      "revenue_impact_logic": "Calculated based on 14 orders in jeopardy multiplied by an average order value of $24k, adjusting for partial recovery probability.",
+      "sla_risk_factors": "Customer commitments allow 4 days late delivery max. The 12-day delay minus the 8 days of buffer gives us a net 4-day deficit, pushing SLAs into the red.",
+      "stockout_probability_rationale": "Given normal buffer depletion rates (230 units/day) and the 12-day resupply halt, 84% of simulation runs showed stock hitting zero before the next inbound."
+    },
     "explanation": "With a 12-day delay at Shanghai port and only 8 days of MCU buffer inventory, NovaTech faces a high probability of production line stoppage. Single-source dependency amplifies exposure significantly.",
     "mitigation_options": [
       {
@@ -75,6 +80,11 @@
     "orders_affected": 7,
     "sla_risk": 0.45,
     "stockout_probability": 0.35,
+    "reasoning": {
+      "revenue_impact_logic": "7 orders mapped to these MCUs totaling $180k. Revenue recognition is delayed but not lost immediately due to customer slack.",
+      "sla_risk_factors": "Most orders have lenient SLA penalties. 3–6 weeks added lead time only breaches contracts for 2 of the 7 affected customers.",
+      "stockout_probability_rationale": "Medium buffer mitigates immediate shock. Stockout risk assumes Taiwan controls extend beyond the 21-day safety stock."
+    },
     "explanation": "New Taiwan export controls add 3–6 weeks to lead times. With medium buffer, NovaTech has time to qualify alternate suppliers or pre-order through bonded warehouses.",
     "mitigation_options": [
       {
@@ -139,6 +149,11 @@
     "orders_affected": 23,
     "sla_risk": 0.62,
     "stockout_probability": 0.55,
+    "reasoning": {
+      "revenue_impact_logic": "High perishable volume turnover. $520k corresponds directly to retail contracts bound to Salinas supply this week.",
+      "sla_risk_factors": "Perishables have zero SLA tolerance for lateness. Any missing shipments instantly trigger financial penalties and lost shelf space.",
+      "stockout_probability_rationale": "Secondary farms in Arizona max out at 65% capacity requirement. The 35% shortfall guarantees partial stockouts across 23 orders."
+    },
     "explanation": "A 35% yield reduction in Salinas Valley directly affects FreshChain's core product lines. Dual-source provides some buffer, but secondary suppliers cannot cover full volume for more than 10 days.",
     "mitigation_options": [
       {
@@ -208,6 +223,11 @@
     "orders_affected": 5,
     "sla_risk": 0.30,
     "stockout_probability": 0.22,
+    "reasoning": {
+      "revenue_impact_logic": "Only $120k at risk primarily due to spot-market price absorption eating into margins on fixed-price contracts rather than absolute loss of sale.",
+      "sla_risk_factors": "High buffer of 45 days completely shields immediate customer deliveries from disruption.",
+      "stockout_probability_rationale": "Extremely low probability. The 45-day runway far exceeds the time needed to pivot sourcing to domestic alloy alternatives."
+    },
     "explanation": "Ukraine export ban affects spot pricing but SteelWright's multi-source strategy and high buffer provide substantial cushion. Risk is manageable with cost hedging.",
     "mitigation_options": [
       {

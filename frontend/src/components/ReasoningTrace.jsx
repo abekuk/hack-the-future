@@ -11,6 +11,13 @@ const STEP_ICONS = {
   7: FileText,
 };
 
+const AGENT_COLORS = {
+  Perception: { bg: 'rgba(66,133,244,0.12)', border: 'rgba(66,133,244,0.3)', text: '#4285F4' },
+  Simulation: { bg: 'rgba(251,188,4,0.12)', border: 'rgba(251,188,4,0.3)', text: '#FBBC04' },
+  Reasoning:  { bg: 'rgba(168,85,247,0.12)', border: 'rgba(168,85,247,0.3)', text: '#A855F7' },
+  Planning:   { bg: 'rgba(52,168,83,0.12)',  border: 'rgba(52,168,83,0.3)',  text: '#34A853' },
+};
+
 export default function ReasoningTrace({ steps, isThinking }) {
   return (
     <div className="flex flex-col h-full">
@@ -40,6 +47,7 @@ export default function ReasoningTrace({ steps, isThinking }) {
           <AnimatePresence>
             {steps.map((step, i) => {
               const Icon = STEP_ICONS[step.step] || Circle;
+              const agentStyle = step.agent ? AGENT_COLORS[step.agent] : null;
               return (
                 <motion.div
                   key={step.step}
@@ -61,19 +69,33 @@ export default function ReasoningTrace({ steps, isThinking }) {
                   <div
                     className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center z-10"
                     style={{
-                      background: 'rgba(66,133,244,0.15)',
-                      border: '1px solid rgba(66,133,244,0.3)',
+                      background: agentStyle ? agentStyle.bg : 'rgba(66,133,244,0.15)',
+                      border: `1px solid ${agentStyle ? agentStyle.border : 'rgba(66,133,244,0.3)'}`,
                     }}
                   >
-                    <Icon size={13} style={{ color: 'var(--accent-blue)' }} />
+                    <Icon size={13} style={{ color: agentStyle ? agentStyle.text : 'var(--accent-blue)' }} />
                   </div>
 
                   <div className="flex-1 min-w-0 pt-0.5">
-                    <div className="flex items-center justify-between gap-2 mb-0.5">
-                      <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
-                        {step.action}
-                      </p>
+                    <div className="flex items-center gap-2 mb-0.5">
+                      {/* Agent badge */}
+                      {step.agent && agentStyle && (
+                        <span
+                          className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded"
+                          style={{
+                            background: agentStyle.bg,
+                            color: agentStyle.text,
+                            border: `1px solid ${agentStyle.border}`,
+                            lineHeight: 1,
+                          }}
+                        >
+                          {step.agent}
+                        </span>
+                      )}
                     </div>
+                    <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
+                      {step.action}
+                    </p>
                     <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                       {step.detail}
                     </p>

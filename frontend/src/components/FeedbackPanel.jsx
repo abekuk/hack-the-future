@@ -1,14 +1,17 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { ThumbsUp, ThumbsDown, Check } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Check, MessageSquare } from 'lucide-react';
+import { getFeedbackCount } from '../utils/api';
 
-export default function FeedbackPanel({ onSubmit }) {
+export default function FeedbackPanel({ onSubmit, companyId }) {
   const [helpful, setHelpful] = useState(null);
+  const [comment, setComment] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const feedbackCount = getFeedbackCount(companyId);
 
   const handleSubmit = () => {
     if (helpful === null) return;
-    onSubmit({ helpful });
+    onSubmit({ helpful, comment });
     setSubmitted(true);
   };
 
@@ -27,10 +30,10 @@ export default function FeedbackPanel({ onSubmit }) {
           <Check size={18} style={{ color: 'var(--accent-green)' }} />
         </div>
         <p className="text-sm font-semibold" style={{ color: 'var(--accent-green)' }}>
-          Feedback logged
+          Feedback logged to agent memory
         </p>
         <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-          The agent's memory has been updated. Thank you for helping improve future recommendations.
+          {feedbackCount + 1} total feedback entries stored. Future recommendations will incorporate your input.
         </p>
       </motion.div>
     );
@@ -44,14 +47,22 @@ export default function FeedbackPanel({ onSubmit }) {
       className="rounded-2xl p-5"
       style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}
     >
-      <div className="flex items-center gap-2 mb-4">
-        <img src="/gemini-logo.png" alt="" width="16" height="16" />
-        <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-          Was this recommendation helpful? (IN DEVELOPMENT)
-        </h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <img src="/gemini-logo.png" alt="" width="16" height="16" />
+          <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+            Was this recommendation helpful?
+          </h3>
+        </div>
+        {feedbackCount > 0 && (
+          <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(66,133,244,0.1)', color: 'var(--accent-blue)' }}>
+            <MessageSquare size={10} className="inline mr-1" style={{ verticalAlign: 'middle' }} />
+            {feedbackCount} logged
+          </span>
+        )}
       </div>
 
-      <div className="flex gap-3 mb-5">
+      <div className="flex gap-3 mb-4">
         {[
           { val: true,  Icon: ThumbsUp,   label: 'Helpful' },
           { val: false, Icon: ThumbsDown, label: 'Not helpful' },
@@ -70,6 +81,21 @@ export default function FeedbackPanel({ onSubmit }) {
           </button>
         ))}
       </div>
+
+      {/* Optional comment */}
+      <textarea
+        value={comment}
+        onChange={e => setComment(e.target.value)}
+        placeholder="Optional: Tell the agent what to improve..."
+        rows={2}
+        className="w-full mb-4 px-3 py-2 rounded-xl text-xs resize-none"
+        style={{
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid var(--border-subtle)',
+          color: 'var(--text-primary)',
+          outline: 'none',
+        }}
+      />
 
       <button
         onClick={handleSubmit}

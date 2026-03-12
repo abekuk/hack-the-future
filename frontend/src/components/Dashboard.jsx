@@ -1,13 +1,15 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import CompanySelector from './CompanySelector';
 import CompanyProfile from './CompanyProfile';
 import DisruptionFeed from './DisruptionFeed';
 import AgentResponse from './AgentResponse';
 import ReasoningTrace from './ReasoningTrace';
+import AgentFlowBar from './AgentFlowBar';
+import SupplierHealth from './SupplierHealth';
 import GeminiGradientText from './GeminiGradientText';
 import { useAgent } from '../hooks/useAgent';
-import { getCompanies, getDisruptions, getMockDisruptions } from '../utils/api';
+import { getCompanies, getDisruptions, getMockDisruptions, clearNewsCache } from '../utils/api';
 
 export default function Dashboard() {
   const [companies, setCompanies] = useState([]);
@@ -19,6 +21,7 @@ export default function Dashboard() {
 
   const { stage, response, streamedSteps, analyze, sendFeedback, reset, restore } = useAgent();
   const companyCache = useRef({});
+  const fetchIdRef = useRef(0); // Race condition guard
 
   useEffect(() => {
     getCompanies().then(data => {
@@ -27,17 +30,41 @@ export default function Dashboard() {
     });
   }, []);
 
+  // Fetch live news with race condition protection
+  const fetchLiveNews = useCallback((company, forceRefresh = false) => {
+    if (!company) return;
+    
+    // Increment fetch ID — any older in-flight request will be stale
+    const currentFetchId = ++fetchIdRef.current;
+
+    // Show mock disruptions immediately
+    setDisruptions(getMockDisruptions(company.id));
+
+    // Clear cache if force refresh
+    if (forceRefresh) {
+      clearNewsCache(company.id);
+    }
+
+    setIsFetchingLive(true);
+    getDisruptions(company.id, company)
+      .then(data => {
+        // Only update if this is still the latest request (guard against race condition)
+        if (fetchIdRef.current === currentFetchId) {
+          setDisruptions(data);
+        } else {
+          console.log(`[Dashboard] Discarded stale news fetch for ${company.id} (fetch #${currentFetchId}, current #${fetchIdRef.current})`);
+        }
+      })
+      .finally(() => {
+        if (fetchIdRef.current === currentFetchId) {
+          setIsFetchingLive(false);
+        }
+      });
+  }, []);
+
   useEffect(() => {
     if (!selectedCompany) return;
-    
-    // Load existing mock disruptions instantly
-    setDisruptions(getMockDisruptions(selectedCompany.id));
-    
-    // Fetch live news asynchronously with loading state
-    setIsFetchingLive(true);
-    getDisruptions(selectedCompany.id, selectedCompany)
-      .then(data => setDisruptions(data))
-      .finally(() => setIsFetchingLive(false));
+    fetchLiveNews(selectedCompany);
 
     const cached = companyCache.current[selectedCompany.id];
     if (cached) {
@@ -48,6 +75,12 @@ export default function Dashboard() {
       reset();
     }
   }, [selectedCompany]);
+
+  const handleRefreshNews = () => {
+    if (selectedCompany && !isFetchingLive) {
+      fetchLiveNews(selectedCompany, true); // force refresh = clear cache
+    }
+  };
 
   const handleDisruptionSelect = (disruption) => {
     setSelectedDisruption(disruption);
@@ -142,12 +175,18 @@ export default function Dashboard() {
               analysisResponse={response}
               analysisStage={stage}
               isFetchingLive={isFetchingLive}
+              companyId={selectedCompany?.id}
+              onRefresh={handleRefreshNews}
             />
+          </div>
+          <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 16 }}>
+            <SupplierHealth company={selectedCompany} />
           </div>
         </aside>
 
         {/* Center - Agent Response */}
         <main className="flex-1 overflow-y-auto p-6">
+          <AgentFlowBar stage={stage} />
           {selectedDisruption && (
             <motion.div
               key={selectedDisruption.id}
@@ -171,6 +210,7 @@ export default function Dashboard() {
             response={response}
             streamedSteps={streamedSteps}
             onFeedback={handleFeedback}
+            companyId={selectedCompany?.id}
           />
         </main>
 
