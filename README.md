@@ -36,7 +36,7 @@ Gemini (Vertex AI) · n8n · React + Vite · NewsAPI · GNews API · Tavily
 
 [`HTF-Deck-WeightlessAgents.pdf`](./docs/HTF-Deck-WeightlessAgents.pdf) — Pitch deck.
 
-[`HTF2_0_case_package.pdf`](./docs/HTF2_0_case_package.pdf) — Original challenge brief.
+[`HTF2.0 case package.pdf`](./docs/HTF2.0 case package.pdf) — Case package.
 
 ## Getting Started
 
