@@ -1,6 +1,6 @@
 # Supply Chain Resilience Agent
 
-Built for **Hack the Future 2026 (Google AI)**. Weightless Agents is an AI co-pilot that helps mid-market manufacturers detect supply chain disruptions earlier, model financial impact, and generate decision-ready mitigation plans — all with human approval before any action is taken.
+Built for **Hack the Future 2026 (Google AI)**. Weightless Agents is an AI co-pilot that helps mid-market manufacturers detect supply chain disruptions earlier, model financial impact, and generate decision-ready mitigation plans, all with human approval before any action is taken.
 
 ## Demo
 
