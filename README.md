@@ -18,13 +18,13 @@ Multi-agent system orchestrated through n8n, powered by Gemini on Google Vertex 
 
 ![Architecture Workflow](./docs/agent-architecture.png)
 
-- **Master Agent** — Orchestrates the pipeline, synthesizes the final risk report with mitigation options, reasoning trace, and drafted actions.
-- **Perception Agent** — Fetches real-time news via NewsAPI (n8n layer) and GNews API (frontend layer), extracts top signals and summarizes risks.
-- **Risk Intelligence Agent** — Scores disruption probability, models lead time/inventory impact, simulates three scenarios, calculates financial exposure.
+- **Master Agent** - Orchestrates the pipeline, synthesizes the final risk report with mitigation options, reasoning trace, and drafted actions.
+- **Perception Agent** - Fetches real-time news via NewsAPI, extracts top signals and summarizes risks.
+- **Risk Intelligence Agent** - Scores disruption probability, models lead time/inventory impact, simulates three scenarios, calculates financial exposure.
 
 ## Tech Stack
 
-Gemini (Vertex AI) · n8n · React + Vite · NewsAPI · GNews API · Tavily
+Gemini (Vertex AI) · n8n · React + Vite · Tailwind CSS · NewsAPI
 
 ## Responsible AI
 
