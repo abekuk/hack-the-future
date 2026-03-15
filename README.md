@@ -6,7 +6,7 @@ Built for **Hack the Future 2026 (Google AI)**. The Supply Chain Resilience Agen
 
 [Watch the live demo](https://www.youtube.com/watch?v=NlhX5qE0ioA&t=260)
 
-> Note: The video shows an earlier version of the UI. See the updated interface below.
+> Note: The video shows an earlier version of the project. See the updated version below.
 
 ![Dashboard & Risk Assessment](./docs/updated-ui-1.png)
 ![Mitigation Trade-Offs & Supplier Health](./docs/updated-ui-2.png)
