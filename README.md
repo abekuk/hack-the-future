@@ -20,7 +20,7 @@ Multi-agent system orchestrated through n8n, powered by Gemini on Google Vertex 
 
 - **Master Agent** - Orchestrates the pipeline, synthesizes the final risk report with mitigation options, reasoning trace, and drafted actions.
 - **Perception Agent** - Fetches real-time news via NewsAPI, extracts top signals and summarizes risks.
-- **Risk Intelligence Agent** - Scores disruption probability, models lead time/inventory impact, simulates three scenarios, calculates financial exposure.
+- **Risk Intelligence Agent** - Scores disruption probability, models lead time/inventory impact, simulates three mitigation scenarios, calculates financial exposure.
 
 ## Tech Stack
 
