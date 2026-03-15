@@ -24,7 +24,7 @@ Multi-agent system orchestrated through n8n, powered by Gemini on Google Vertex 
 
 ## Tech Stack
 
-Gemini (Vertex AI) · n8n · React + Vite · Tailwind CSS · NewsAPI
+Gemini (Vertex AI) · n8n · React · Vite · Tailwind CSS · NewsAPI
 
 ## Responsible AI
 
